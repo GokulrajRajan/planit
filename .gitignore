@@ -1,0 +1,21 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+instance/
+*.db
+*.sqlite3
+
+# Secrets (keep the example file)
+.env
+.env.*
+!.env.example
+
+# Claude Code machine-local files
+.claude/*.lock
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
