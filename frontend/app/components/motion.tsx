@@ -18,6 +18,43 @@ export function usePrefersReducedMotion() {
   );
 }
 
+// Clips whose play() was refused (iOS Low Power Mode, some Android browsers block muted autoplay too).
+// They start on the visitor's first tap or key press instead.
+const blockedClips = new Set<HTMLVideoElement>();
+const GESTURES = ["pointerdown", "touchend", "click", "keydown"] as const;
+
+function retryBlockedClips() {
+  if (!blockedClips.size) {
+    for (const type of GESTURES) window.removeEventListener(type, retryBlockedClips);
+    return;
+  }
+  for (const video of blockedClips) {
+    video.play().then(
+      () => blockedClips.delete(video),
+      () => {},
+    );
+  }
+}
+
+/** Starts a muted, looping clip, falling back to the first user gesture where autoplay is blocked. */
+export function playClip(video: HTMLVideoElement) {
+  video.muted = true;
+  video.play().then(
+    () => blockedClips.delete(video),
+    (error: unknown) => {
+      // AbortError just means pauseClip() ran before playback began.
+      if (!(error instanceof DOMException) || error.name !== "NotAllowedError") return;
+      blockedClips.add(video);
+      for (const type of GESTURES) window.addEventListener(type, retryBlockedClips, { passive: true });
+    },
+  );
+}
+
+export function pauseClip(video: HTMLVideoElement) {
+  blockedClips.delete(video);
+  video.pause();
+}
+
 type MotionState = { paused: boolean; toggle: () => void };
 
 const MotionContext = createContext<MotionState>({ paused: false, toggle: () => {} });
@@ -26,13 +63,15 @@ export function useMotion() {
   return useContext(MotionContext);
 }
 
+/**
+ * `paused` comes only from the pause button. The OS reduced-motion setting is handled separately: it
+ * stops the self-running loops (see globals.css) but not the clips or the scroll-driven slides.
+ */
 export function MotionProvider({ children }: { children: React.ReactNode }) {
-  const reduced = usePrefersReducedMotion();
-  const [override, setOverride] = useState<boolean | null>(null);
-  const paused = override ?? reduced;
+  const [paused, setPaused] = useState(false);
 
   return (
-    <MotionContext.Provider value={{ paused, toggle: () => setOverride(!paused) }}>
+    <MotionContext.Provider value={{ paused, toggle: () => setPaused((p) => !p) }}>
       <div data-motion={paused ? "paused" : "running"}>{children}</div>
     </MotionContext.Provider>
   );

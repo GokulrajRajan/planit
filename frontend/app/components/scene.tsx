@@ -29,8 +29,6 @@ const smooth = (v: number) => {
   return t * t * (3 - 2 * t);
 };
 
-const REDUCED_STATE: SceneState = { enter: 1, hold: 1, reveal: 1, v: 1, swipe: 0, exit: 0, total: 0.5 };
-
 /** Calls `fn` with the enclosing <Scene>'s progress every time it changes. */
 export function useSceneFrame(fn: Listener) {
   const listen = useContext(SceneContext);
@@ -72,7 +70,6 @@ export function Scene({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let pinnedLength = 0;
     let heightVh = 1;
@@ -84,18 +81,16 @@ export function Scene({
 
     const apply = (u: number) => {
       const hL = pinnedLength;
-      const s: SceneState = reduced
-        ? REDUCED_STATE
-        : {
-            enter: clamp01(u),
-            hold: hL ? clamp01((u - 1) / hL) : u >= 1 ? 1 : 0,
-            reveal: clamp01((u - 0.4) / (0.55 + 0.45 * hL)),
-            v: clamp01((u - 0.25) / (0.75 + 0.8 * hL)),
-            // u reaches heightVh when the section's bottom edge meets the bottom of the viewport.
-            swipe: smooth((u - heightVh) / 0.4),
-            exit: clamp01(u - heightVh),
-            total: clamp01(u / (2 + hL)),
-          };
+      const s: SceneState = {
+        enter: clamp01(u),
+        hold: hL ? clamp01((u - 1) / hL) : u >= 1 ? 1 : 0,
+        reveal: clamp01((u - 0.4) / (0.55 + 0.45 * hL)),
+        v: clamp01((u - 0.25) / (0.75 + 0.8 * hL)),
+        // u reaches heightVh when the section's bottom edge meets the bottom of the viewport.
+        swipe: smooth((u - heightVh) / 0.4),
+        exit: clamp01(u - heightVh),
+        total: clamp01(u / (2 + hL)),
+      };
       for (const [key, value] of Object.entries(s)) el.style.setProperty(`--${key}`, value.toFixed(4));
       listeners.forEach((fn) => fn(s));
     };

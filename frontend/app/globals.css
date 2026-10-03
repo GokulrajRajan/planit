@@ -2078,7 +2078,9 @@
   margin-bottom: clamp(16px, 3vh, 40px);
 }
 
-@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+/* Single-column slides outgrow the screen on phones, so they scroll normally there. The hero always
+   fits one screen and stays pinned: its whole intro is driven by that pinned scroll. */
+@media (max-width: 900px) {
   .scene--pinned {
     height: auto;
   }
@@ -2088,13 +2090,15 @@
     height: auto;
     min-height: 100svh;
   }
+}
 
-  .hero-scene {
-    height: auto;
-  }
-
-  .hero {
-    position: relative;
+/* Reduced motion stops the loops that run by themselves; scroll-driven motion and the clips stay
+   (the clips can be stopped with the pause button). */
+@media (prefers-reduced-motion: reduce) {
+  .hero__bg,
+  .hero__bob,
+  .procard {
+    animation: none;
   }
 }
 

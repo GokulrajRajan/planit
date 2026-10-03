@@ -16,7 +16,7 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { useMotion } from "./motion";
+import { pauseClip, playClip, useMotion } from "./motion";
 import { useSceneFrame } from "./scene";
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -329,23 +329,18 @@ export function Mountain() {
   const narrow = useSyncExternalStore(subscribeNarrow, () => window.matchMedia(NARROW_QUERY).matches, () => false);
   const name = narrow ? "summit-m" : "summit";
 
-  // Only decode while on screen and while motion isn't paused.
+  // Only decode while on screen and while motion isn't paused. Re-runs when the source switches to the
+  // narrow cut after hydration, since a new src stops playback.
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
-    let visible = false;
-    const sync = () => {
-      video.muted = true;
-      if (visible && !paused) video.play().catch(() => {});
-      else video.pause();
-    };
     const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      sync();
+      if (entry.isIntersecting && !paused) playClip(video);
+      else pauseClip(video);
     });
     io.observe(video);
     return () => io.disconnect();
-  }, [paused]);
+  }, [paused, name]);
 
   return (
     <video

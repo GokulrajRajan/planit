@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef } from "react";
-import { useMotion } from "./motion";
+import { pauseClip, playClip, useMotion } from "./motion";
 
 /** x/y: tile centre relative to the card centre, in card widths. s: tile width in card widths. ar: width / height. */
 type Pos = { x: number; y: number; s: number; ar?: number };
@@ -221,7 +221,6 @@ export function Hero() {
     };
 
     const scrollProgress = () => {
-      if (reduced) return 1;
       const r = scene.getBoundingClientRect();
       const span = r.height - window.innerHeight;
       return span > 0 ? clamp01(-r.top / span) : 0;
@@ -283,7 +282,8 @@ export function Hero() {
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!paused) timeRef.current += dt;
+      // The line's idle wiggle is a self-running loop, so reduced motion holds it still.
+      if (!paused && !reduced) timeRef.current += dt;
 
       // Ease towards the scroll position so wheel steps glide instead of jumping.
       const target = scrollProgress();
@@ -305,9 +305,8 @@ export function Hero() {
     const videos = [...hero.querySelectorAll("video")];
     const syncVideos = () => {
       for (const v of videos) {
-        v.muted = true;
-        if (visible && !paused) v.play().catch(() => {});
-        else v.pause();
+        if (visible && !paused) playClip(v);
+        else pauseClip(v);
       }
     };
 
