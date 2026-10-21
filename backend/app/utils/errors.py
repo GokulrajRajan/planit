@@ -24,6 +24,10 @@ def register_error_handlers(app):
     def handle_validation_error(exc: ValidationError):
         return error(message="Validation failed", errors=exc.messages, status=422)
 
+    @app.errorhandler(429)
+    def handle_rate_limited(exc):
+        return error(message="Too many requests. Please wait a while and try again.", status=429)
+
     @app.errorhandler(HTTPException)
     def handle_http_exception(exc: HTTPException):
         return error(message=exc.description, status=exc.code or 500)

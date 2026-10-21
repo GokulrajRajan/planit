@@ -25,24 +25,25 @@ const smooth = (v: number) => {
   return t * t * (3 - 2 * t);
 };
 
-const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
+const fmt = (n: number) => Math.floor(n).toLocaleString("en-IN");
 
 /* ───────────── Phone ───────────── */
 
-const POSTS = [
-  { title: "Notes on slow living", emoji: "🌿", cat: "Essays", reads: "4,820" },
-  { title: "A year of Sunday walks", emoji: "🚶", cat: "Journal", reads: "4,231" },
-  { title: "How I plan a week", emoji: "🗓️", cat: "Productivity", reads: "3,906" },
-  { title: "Letters to my editor", emoji: "✉️", cat: "Essays", reads: "2,118" },
+// A sample investor's app screens. Every figure is made up and the screen says so.
+const GOALS = [
+  { title: "Retirement", emoji: "🏝️", sub: "2048 · SIP ₹10,000", value: "48%" },
+  { title: "Child's education", emoji: "🎓", sub: "2036 · SIP ₹8,000", value: "35%" },
+  { title: "New home", emoji: "🏠", sub: "2031 · SIP ₹5,000", value: "22%" },
+  { title: "Emergency fund", emoji: "🛟", sub: "Liquid fund", value: "100%" },
 ];
 
-const PRO_ROWS = [
-  { title: "Supporters", emoji: "💛", sub: "+12 this week", value: "314" },
-  { title: "Tips", emoji: "☕", sub: "This month", value: "$412.50" },
-  { title: "Paid posts", emoji: "🔒", sub: "Published", value: "18" },
-  { title: "Next payout", emoji: "🏦", sub: "Automatic", value: "Oct 1" },
-  { title: "Newsletter", emoji: "📮", sub: "Subscribers", value: "1,204" },
-  { title: "Referrals", emoji: "🤝", sub: "This year", value: "$96.00" },
+const SIP_ROWS = [
+  { title: "Flexi cap fund", emoji: "📈", sub: "5th of every month", value: "₹10,000" },
+  { title: "Index fund", emoji: "🧭", sub: "10th of every month", value: "₹6,000" },
+  { title: "ELSS (tax saver)", emoji: "🧾", sub: "3-year lock-in", value: "₹4,000" },
+  { title: "Hybrid fund", emoji: "⚖️", sub: "20th of every month", value: "₹3,000" },
+  { title: "Liquid fund", emoji: "💧", sub: "Emergency fund", value: "₹2,000" },
+  { title: "Next instalment", emoji: "🗓️", sub: "Auto-debit", value: "5 Nov" },
 ];
 
 function PhoneTabBar() {
@@ -59,16 +60,16 @@ function PhoneTabBar() {
 
 /**
  * Totals count up with the slide's reveal. As the slide releases, the screen swipes (--swipe) to the
- * Pro screen, whose content then scrolls up inside the phone (--exit), leading into the card slide.
+ * SIP screen, whose content then scrolls up inside the phone (--exit), leading into the card slide.
  */
 export function PhoneMockup() {
   const totalRef = useRef<HTMLSpanElement>(null);
-  const publishedRef = useRef<HTMLSpanElement>(null);
+  const investedRef = useRef<HTMLSpanElement>(null);
 
   useSceneFrame((s) => {
     const k = 1 - Math.pow(1 - s.reveal, 3);
-    if (totalRef.current) totalRef.current.textContent = fmt(304980 + (312155 - 304980) * k);
-    if (publishedRef.current) publishedRef.current.textContent = String(Math.round(198 + 16 * k));
+    if (totalRef.current) totalRef.current.textContent = `₹${fmt(1182400 + (1248350 - 1182400) * k)}`;
+    if (investedRef.current) investedRef.current.textContent = fmt(910000 + (960000 - 910000) * k);
   });
 
   return (
@@ -98,64 +99,64 @@ export function PhoneMockup() {
               </div>
 
               <div className="phone__balance">
-                <span ref={totalRef}>{fmt(312155)}</span>
+                <span ref={totalRef}>₹{fmt(1248350)}</span>
                 <span className="phone__eye">
                   <EyeOff />
                 </span>
               </div>
-              <p className="phone__balance-label">total reads, all time</p>
+              <p className="phone__balance-label">portfolio value · illustrative example</p>
 
               <div className="phone__grid">
                 <div className="phone__card">
-                  <p>Drafts</p>
-                  <strong>12 posts</strong>
-                  <span className="phone__tag">+3 this week</span>
+                  <p>Monthly SIPs</p>
+                  <strong>₹25,000</strong>
+                  <span className="phone__tag">5 active</span>
                 </div>
                 <div className="phone__card">
-                  <p>Published</p>
+                  <p>Invested</p>
                   <strong>
-                    <span ref={publishedRef}>214</span> posts
+                    ₹<span ref={investedRef}>{fmt(960000)}</span>
                   </strong>
-                  <span className="phone__tag">+14.02% all time</span>
+                  <span className="phone__tag">over 3 years</span>
                 </div>
               </div>
 
               <div className="phone__row phone__row--muted">
                 <span className="phone__stack">
-                  <i style={{ background: "#141414" }}>E</i>
-                  <i style={{ background: "#f0645a" }}>J</i>
-                  <i style={{ background: "#7d9cf0" }}>T</i>
+                  <i style={{ background: "#032b66" }}>E</i>
+                  <i style={{ background: "#f28c28" }}>D</i>
+                  <i style={{ background: "#7d9cf0" }}>H</i>
                 </span>
-                <span className="phone__row-title">12 categories</span>
+                <span className="phone__row-title">Equity, debt, hybrid</span>
                 <ArrowRight className="phone__row-end" />
               </div>
 
               <div className="phone__row">
                 <span className="phone__logo">P</span>
-                <span className="phone__row-title">Planit Pro</span>
+                <span className="phone__row-title">Next review</span>
                 <span className="phone__row-end phone__amount">
-                  $2,235.09
-                  <small>$314.46 in tips</small>
+                  12 Dec
+                  <small>with Planit</small>
                 </span>
               </div>
 
               <div className="phone__group">
                 <div className="phone__group-head">
-                  <span>Posts</span>
+                  <span>Goals</span>
                   <span className="phone__row-end">
-                    214
+                    4
                     <span className="phone__chev">
                       <ChevronDown />
                     </span>
                   </span>
                 </div>
-                {POSTS.map((p) => (
-                  <div key={p.title} className="phone__item">
+                {GOALS.map((g) => (
+                  <div key={g.title} className="phone__item">
                     <span>
-                      {p.title} <span className="phone__emoji">{p.emoji}</span>
-                      <small>{p.cat}</small>
+                      {g.title} <span className="phone__emoji">{g.emoji}</span>
+                      <small>{g.sub}</small>
                     </span>
-                    <span>{p.reads}</span>
+                    <span>{g.value}</span>
                   </div>
                 ))}
               </div>
@@ -167,21 +168,21 @@ export function PhoneMockup() {
                 <div className="phone__head">
                   <ChevronLeft />
                   <span className="phone__pager">
-                    <span>Pro</span>
+                    <span>SIPs</span>
                   </span>
                   <Ellipsis />
                 </div>
                 <div className="phone__pro-top">
-                  <span>Earned this month</span>
-                  <strong>$2,235.09</strong>
+                  <span>Investing every month</span>
+                  <strong>₹25,000</strong>
                 </div>
                 <div className="phone__minicard">
                   <span className="phone__minicard-mark">P</span>
-                  <span className="phone__minicard-label">PRO</span>
-                  <span className="phone__minicard-num">•••• 2026</span>
+                  <span className="phone__minicard-label">SIP</span>
+                  <span className="phone__minicard-num">Auto-debit</span>
                 </div>
                 <div className="phone__group">
-                  {PRO_ROWS.map((r) => (
+                  {SIP_ROWS.map((r) => (
                     <div key={r.title} className="phone__item">
                       <span>
                         {r.title} <span className="phone__emoji">{r.emoji}</span>
@@ -212,8 +213,8 @@ export function ProCard() {
         <div className="procard__chip" />
         <div className="procard__mark">P</div>
         <div className="procard__network">
-          PRO
-          <small>Planit Membership</small>
+          SIP
+          <small>Start early</small>
         </div>
       </div>
     </div>

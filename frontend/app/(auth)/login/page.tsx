@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { LoginForm } from "../forms";
 
 export const metadata: Metadata = {
-  title: "Log in — Planit",
+  title: "Admin login",
+  robots: { index: false, follow: false },
 };
 
 export default function LoginPage() {

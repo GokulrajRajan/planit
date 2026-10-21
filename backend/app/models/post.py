@@ -15,6 +15,12 @@ class PostStatus:
     ALL = (DRAFT, PUBLISHED)
 
 
+class PostType:
+    BLOG = "blog"
+    MARKET_UPDATE = "market_update"
+    ALL = (BLOG, MARKET_UPDATE)
+
+
 class Post(db.Model):
     __tablename__ = "posts"
 
@@ -25,24 +31,22 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     cover_image_url = db.Column(db.String(500), nullable=True)
     status = db.Column(db.String(20), nullable=False, default=PostStatus.DRAFT, index=True)
+    post_type = db.Column(db.String(20), nullable=False, default=PostType.BLOG, index=True)
 
     author_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
 
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
-        db.DateTime,
+        db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    published_at = db.Column(db.DateTime, nullable=True)
+    published_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
     author = db.relationship("User", back_populates="posts")
     category = db.relationship("Category", back_populates="posts")
     tags = db.relationship("Tag", secondary=post_tags, backref=db.backref("posts", lazy="dynamic"))
-    comments = db.relationship(
-        "Comment", back_populates="post", lazy="dynamic", cascade="all, delete-orphan"
-    )
 
     @property
     def is_published(self) -> bool:

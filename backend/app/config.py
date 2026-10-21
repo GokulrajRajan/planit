@@ -32,12 +32,50 @@ class BaseConfig:
         if origin.strip()
     ]
 
-    POSTS_PER_PAGE_DEFAULT = 10
-    POSTS_PER_PAGE_MAX = 50
+    PER_PAGE_DEFAULT = 10
+    PER_PAGE_MAX = 50
+
+    # How many X-Forwarded-For entries to trust (rate limits and captcha use the visitor's IP).
+    # Next.js forwards an incoming X-Forwarded-For unchanged, so a visitor could fake it: in production
+    # the reverse proxy in front of Next.js must overwrite it (nginx:
+    # `proxy_set_header X-Forwarded-For $remote_addr;`), and Flask must only be reachable through Next.js.
+    TRUSTED_PROXY_COUNT = int(os.environ.get("TRUSTED_PROXY_COUNT", 1))
+
+    # Rate limits use Flask-Limiter syntax. In-memory storage is per process: point
+    # RATELIMIT_STORAGE_URI at Redis (redis://...) when running several gunicorn workers.
+    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+    RATELIMIT_HEADERS_ENABLED = True
+    LOGIN_RATE_LIMIT = "10 per minute"
+    ENQUIRY_RATE_LIMIT = "5 per hour"
+    NEWSLETTER_RATE_LIMIT = "10 per hour"
+
+    # Any siteverify-style captcha works: Cloudflare Turnstile (default), hCaptcha or reCAPTCHA v2
+    # (set CAPTCHA_VERIFY_URL). Without a secret key, forms are refused unless CAPTCHA_OPTIONAL is on
+    # (development and testing only).
+    CAPTCHA_SECRET_KEY = os.environ.get("CAPTCHA_SECRET_KEY", "")
+    CAPTCHA_OPTIONAL = False
+    CAPTCHA_VERIFY_URL = os.environ.get(
+        "CAPTCHA_VERIFY_URL", "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    )
+
+    # Outgoing email for enquiry notifications. Leave MAIL_SERVER empty to skip sending.
+    MAIL_SERVER = os.environ.get("MAIL_SERVER", "")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
+    MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "true").lower() == "true"
+    MAIL_USE_SSL = os.environ.get("MAIL_USE_SSL", "false").lower() == "true"
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
+    MAIL_FROM = os.environ.get("MAIL_FROM", "")
+    ENQUIRY_NOTIFY_TO = [
+        address.strip()
+        for address in os.environ.get("ENQUIRY_NOTIFY_TO", "").split(",")
+        if address.strip()
+    ]
 
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
+    CAPTCHA_OPTIONAL = True
 
 
 class TestingConfig(BaseConfig):
@@ -45,6 +83,11 @@ class TestingConfig(BaseConfig):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL")
     JWT_COOKIE_CSRF_PROTECT = False
+    RATELIMIT_ENABLED = False
+    CAPTCHA_SECRET_KEY = ""
+    CAPTCHA_OPTIONAL = True
+    MAIL_SERVER = ""
+    ENQUIRY_NOTIFY_TO = ["office@example.com"]
 
 
 class ProductionConfig(BaseConfig):

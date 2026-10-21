@@ -9,11 +9,11 @@ def _claims_for(user: User) -> dict:
     return {"role": user.role, "name": user.name, "email": user.email}
 
 
-def register_user(name: str, email: str, password: str) -> User:
+def create_admin(name: str, email: str, password: str) -> User:
     if User.query.filter_by(email=email).first() is not None:
         raise APIError("An account with this email already exists", status=409)
 
-    user = User(name=name, email=email, role=UserRole.READER)
+    user = User(name=name, email=email, role=UserRole.ADMIN)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -21,9 +21,18 @@ def register_user(name: str, email: str, password: str) -> User:
 
 
 def authenticate_user(email: str, password: str) -> User:
+    """Only admins can sign in. Other accounts get the same error, so the response doesn't reveal roles."""
     user = User.query.filter_by(email=email).first()
-    if user is None or not user.check_password(password):
+    if user is None or not user.check_password(password) or not user.is_admin:
         raise APIError("Invalid email or password", status=401)
+    return user
+
+
+def get_admin_or_401(user_id: int) -> User:
+    """Used on token refresh, so a deleted or demoted account can't keep its session alive."""
+    user = db.session.get(User, user_id)
+    if user is None or not user.is_admin:
+        raise APIError("Authentication required", status=401)
     return user
 
 

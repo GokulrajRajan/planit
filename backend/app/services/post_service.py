@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from app.extensions import db
 from app.models.category import Category
-from app.models.post import Post, PostStatus
+from app.models.post import Post, PostStatus, PostType
 from app.models.tag import Tag
 from app.models.user import User, UserRole
 from app.utils.errors import APIError
@@ -37,9 +37,11 @@ def can_manage_post(user: User, post: Post) -> bool:
     return user.is_admin or post.author_id == user.id
 
 
-def list_published_posts(page: int, per_page: int, category_slug=None, tag_slug=None, search=None):
+def list_published_posts(page: int, per_page: int, category_slug=None, tag_slug=None, search=None, post_type=None):
     query = Post.query.filter_by(status=PostStatus.PUBLISHED)
 
+    if post_type:
+        query = query.filter(Post.post_type == post_type)
     if category_slug:
         query = query.join(Category).filter(Category.slug == category_slug)
     if tag_slug:
@@ -52,10 +54,12 @@ def list_published_posts(page: int, per_page: int, category_slug=None, tag_slug=
     return query.paginate(page=page, per_page=per_page, error_out=False)
 
 
-def list_own_posts(user: User, page: int, per_page: int):
+def list_own_posts(user: User, page: int, per_page: int, post_type=None):
     query = Post.query.order_by(Post.created_at.desc())
     if not user.is_admin:
         query = query.filter_by(author_id=user.id)
+    if post_type:
+        query = query.filter(Post.post_type == post_type)
     return query.paginate(page=page, per_page=per_page, error_out=False)
 
 
@@ -87,6 +91,7 @@ def create_post(author: User, data: dict) -> Post:
         content=data["content"],
         cover_image_url=data.get("cover_image_url"),
         status=status,
+        post_type=data.get("post_type", PostType.BLOG),
         author=author,
         category=_resolve_category(data.get("category_id")),
         published_at=datetime.now(timezone.utc) if status == PostStatus.PUBLISHED else None,
@@ -108,6 +113,8 @@ def update_post(post: Post, data: dict) -> Post:
         post.content = data["content"]
     if "cover_image_url" in data:
         post.cover_image_url = data["cover_image_url"]
+    if "post_type" in data:
+        post.post_type = data["post_type"]
     if "category_id" in data:
         post.category = _resolve_category(data["category_id"])
     if "tag_names" in data:

@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef } from "react";
+import { ROUTES } from "@/lib/site";
 import { pauseClip, playClip, useMotion } from "./motion";
+import { SmartLink } from "./site/SmartLink";
 
 /** x/y: tile centre relative to the card centre, in card widths. s: tile width in card widths. ar: width / height. */
 type Pos = { x: number; y: number; s: number; ar?: number };
@@ -137,29 +139,32 @@ function TrendChart() {
   );
 }
 
-/** Frosted "Reads" dashboard card; sized by the `--card-w` custom property on an ancestor. */
-export function GlassReads({ reads, scrub = false, chart = false }: { reads: number; scrub?: boolean; chart?: boolean }) {
+/**
+ * Frosted sample portfolio dashboard; sized by the `--card-w` custom property on an ancestor.
+ * Every figure on it is made up, so it always carries the "Illustrative example" label.
+ */
+export function GlassPortfolio({ value, scrub = false, chart = false }: { value: number; scrub?: boolean; chart?: boolean }) {
   return (
     <div className="hero__glass">
       <div className="glass__top">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
           <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5h4" />
         </svg>
-        <span>Reads</span>
+        <span>Portfolio</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <circle cx="12" cy="12" r="8" />
           <circle cx="12" cy="10" r="3" />
           <path d="M6.5 17.5c1.5-2 3.4-3 5.5-3s4 1 5.5 3" />
         </svg>
       </div>
+      <div className="glass__tag">Illustrative example</div>
       <div className="glass__value">
-        <Odometer value={Math.floor(reads).toLocaleString("en-US")} scrub={scrub} />
-        <small>reads</small>
+        <Odometer value={`₹${Math.floor(value).toLocaleString("en-IN")}`} scrub={scrub} />
       </div>
-      <div className="glass__delta">+ 18,234 (+6.34%) past month →</div>
+      <div className="glass__delta">Sample portfolio value · not real returns</div>
       {chart && <TrendChart />}
       <div className="glass__ranges">
-        {["1D", "1W", "1M", "3M", "1Y", "ALL"].map((r) => (
+        {["1M", "3M", "6M", "1Y", "3Y", "ALL"].map((r) => (
           <span key={r} className={r === "ALL" ? "is-active" : undefined}>
             {r}
           </span>
@@ -174,7 +179,7 @@ export function GlassReads({ reads, scrub = false, chart = false }: { reads: num
  * into a tile, the glass dashboard grows in, its number rolls, the line becomes a stock chart and the
  * tiles regroup. Only the line's gentle wiggle and the background drift run on their own.
  */
-export function Hero() {
+export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
   const { paused } = useMotion();
   const sceneRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -335,7 +340,7 @@ export function Hero() {
         <div className="hero__bg" aria-hidden="true" />
 
         <div ref={cardRef} className="hero__card" aria-hidden="true">
-          <GlassReads reads={300050} scrub />
+          <GlassPortfolio value={1248350} scrub />
           <div className="hero__photo">
             <Clip name="kids-fountain" className="hero__media" />
           </div>
@@ -395,11 +400,21 @@ export function Hero() {
         </svg>
 
         <div className="hero__copy">
-          <h1 className="hero__title">Write more. Reach more.</h1>
-          <p className="hero__sub">Being better than a blog means more of everything.</p>
-          <Link href="/register" className="pill pill--light pill--lg">
-            Get started
-          </Link>
+          <h1 className="hero__title">Start early. Invest with a plan.</h1>
+          <p className="hero__sub">
+            Mutual funds, SIPs and goal planning, explained simply and reviewed regularly, with every commission
+            disclosed.
+          </p>
+          <div className="hero__actions">
+            <Link href={ROUTES.contact} className="pill pill--accent pill--lg">
+              Book a Free Consultation
+            </Link>
+            {startSipUrl && (
+              <SmartLink href={startSipUrl} className="pill pill--light pill--lg">
+                Start a SIP
+              </SmartLink>
+            )}
+          </div>
         </div>
       </div>
     </section>

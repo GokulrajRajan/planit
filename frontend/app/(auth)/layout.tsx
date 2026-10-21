@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { GlassReads } from "../components/Hero";
+import { resolveLogoUrl } from "@/lib/logo";
+import { GlassPortfolio } from "../components/Hero";
+import { Logo } from "../components/site/Logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="landing auth">
       <div className="auth__col">
         <header className="auth__top">
-          <Link href="/" className="wordmark auth__logo" aria-label="Planit home">
-            Planit
-          </Link>
+          <Logo logoUrl={resolveLogoUrl()} className="auth__logo" />
           <Link href="/" className="auth__back">
             ← Back to home
           </Link>
@@ -20,7 +20,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <aside className="auth__art" aria-hidden="true">
         <div className="hero__bg" />
         <div className="auth__art-card">
-          <GlassReads reads={312148} chart />
+          <GlassPortfolio value={1248350} chart />
         </div>
         <p className="auth__art-quote">Write more. Reach more.</p>
       </aside>

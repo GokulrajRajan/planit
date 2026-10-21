@@ -1,6 +1,7 @@
-from flask import Blueprint, current_app, request
-from flask_jwt_extended import get_jwt_identity, jwt_required, verify_jwt_in_request
+from flask import Blueprint, request
+from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 
+from app.models.post import PostType
 from app.models.user import UserRole
 from app.schemas.post_schema import (
     post_create_schema,
@@ -21,31 +22,11 @@ from app.services.post_service import (
 )
 from app.utils.decorators import role_required
 from app.utils.errors import APIError
+from app.utils.pagination import paginated_data, pagination_args
+from app.utils.request_args import choice_arg
 from app.utils.responses import success
 
 posts_bp = Blueprint("posts", __name__)
-
-
-def _pagination_args():
-    default_per_page = current_app.config["POSTS_PER_PAGE_DEFAULT"]
-    max_per_page = current_app.config["POSTS_PER_PAGE_MAX"]
-    page = request.args.get("page", 1, type=int)
-    per_page = min(request.args.get("per_page", default_per_page, type=int), max_per_page)
-    return max(page, 1), max(per_page, 1)
-
-
-def _paginated_response(pagination, schema):
-    return success(
-        data={
-            "posts": schema.dump(pagination.items),
-            "meta": {
-                "page": pagination.page,
-                "per_page": pagination.per_page,
-                "total": pagination.total,
-                "pages": pagination.pages,
-            },
-        }
-    )
 
 
 def _optional_current_user():
@@ -59,24 +40,25 @@ def _optional_current_user():
 
 @posts_bp.get("")
 def get_posts():
-    page, per_page = _pagination_args()
+    page, per_page = pagination_args()
     pagination = list_published_posts(
         page=page,
         per_page=per_page,
         category_slug=request.args.get("category"),
         tag_slug=request.args.get("tag"),
         search=request.args.get("search"),
+        post_type=choice_arg("type", PostType.ALL),
     )
-    return _paginated_response(pagination, posts_summary_schema)
+    return success(data=paginated_data(pagination, posts_summary_schema, "posts"))
 
 
 @posts_bp.get("/mine")
 @role_required(UserRole.AUTHOR, UserRole.ADMIN)
 def get_my_posts():
     user = get_user_or_404(int(get_jwt_identity()))
-    page, per_page = _pagination_args()
-    pagination = list_own_posts(user, page=page, per_page=per_page)
-    return _paginated_response(pagination, posts_summary_schema)
+    page, per_page = pagination_args()
+    pagination = list_own_posts(user, page=page, per_page=per_page, post_type=choice_arg("type", PostType.ALL))
+    return success(data=paginated_data(pagination, posts_summary_schema, "posts"))
 
 
 @posts_bp.get("/<string:slug>")

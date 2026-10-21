@@ -1,9 +1,9 @@
 from marshmallow import Schema, fields, validate
 
-from app.models.post import PostStatus
+from app.models.post import PostStatus, PostType
 from app.schemas.category_schema import CategorySchema
 from app.schemas.tag_schema import TagSchema
-from app.schemas.user_schema import UserSchema
+from app.schemas.user_schema import AuthorSchema
 
 
 class PostSchema(Schema):
@@ -14,7 +14,8 @@ class PostSchema(Schema):
     content = fields.String(dump_only=True)
     cover_image_url = fields.String(dump_only=True, allow_none=True)
     status = fields.String(dump_only=True)
-    author = fields.Nested(UserSchema, dump_only=True)
+    post_type = fields.String(dump_only=True)
+    author = fields.Nested(AuthorSchema, dump_only=True)
     category = fields.Nested(CategorySchema, dump_only=True, allow_none=True)
     tags = fields.List(fields.Nested(TagSchema), dump_only=True)
     created_at = fields.DateTime(dump_only=True)
@@ -29,7 +30,8 @@ class PostSummarySchema(Schema):
     excerpt = fields.String(dump_only=True)
     cover_image_url = fields.String(dump_only=True, allow_none=True)
     status = fields.String(dump_only=True)
-    author = fields.Nested(UserSchema, dump_only=True)
+    post_type = fields.String(dump_only=True)
+    author = fields.Nested(AuthorSchema, dump_only=True)
     category = fields.Nested(CategorySchema, dump_only=True, allow_none=True)
     tags = fields.List(fields.Nested(TagSchema), dump_only=True)
     created_at = fields.DateTime(dump_only=True)
@@ -42,6 +44,7 @@ class PostCreateSchema(Schema):
     content = fields.String(required=True, validate=validate.Length(min=1))
     cover_image_url = fields.Url(required=False, allow_none=True)
     status = fields.String(required=False, validate=validate.OneOf(PostStatus.ALL))
+    post_type = fields.String(required=False, validate=validate.OneOf(PostType.ALL))
     category_id = fields.Integer(required=False, allow_none=True)
     tag_names = fields.List(fields.String(validate=validate.Length(min=1, max=60)), required=False)
 
@@ -52,6 +55,7 @@ class PostUpdateSchema(Schema):
     content = fields.String(validate=validate.Length(min=1))
     cover_image_url = fields.Url(allow_none=True)
     status = fields.String(validate=validate.OneOf(PostStatus.ALL))
+    post_type = fields.String(validate=validate.OneOf(PostType.ALL))
     category_id = fields.Integer(allow_none=True)
     tag_names = fields.List(fields.String(validate=validate.Length(min=1, max=60)))
 

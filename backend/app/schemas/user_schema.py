@@ -11,6 +11,13 @@ class UserSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
 
 
+class AuthorSchema(Schema):
+    """Public view of a user (on posts): never exposes their email or role."""
+
+    id = fields.Integer(dump_only=True)
+    name = fields.String(dump_only=True)
+
+
 class UserUpdateSchema(Schema):
     name = fields.String(validate=validate.Length(min=2, max=120))
     role = fields.String(validate=validate.OneOf(UserRole.ALL))

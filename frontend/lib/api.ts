@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from "axios";
+import axios, { isAxiosError, type InternalAxiosRequestConfig } from "axios";
 
 /** Every Flask endpoint wraps its payload in this envelope (see backend/app/utils/responses.py). */
 export type ApiEnvelope<T> = {
@@ -13,6 +13,38 @@ export const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
+});
+
+type RefreshHandler = () => Promise<string | null>;
+type RetryableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
+
+let refreshHandler: RefreshHandler | null = null;
+let refreshing: Promise<string | null> | null = null;
+
+// The auth endpoints answer 401 for reasons a new access token can't fix.
+const NO_RETRY_PATHS = ["/auth/login", "/auth/refresh", "/auth/logout"];
+
+/** lib/auth.ts registers how to get a fresh access token (or null if the session is over). */
+export function onAccessTokenExpired(handler: RefreshHandler) {
+  refreshHandler = handler;
+}
+
+// On a 401, refresh the access token once (shared by every request that failed at the same time),
+// then replay the original request with the new token.
+api.interceptors.response.use(undefined, async (error: unknown) => {
+  if (!isAxiosError(error) || error.response?.status !== 401 || !refreshHandler) throw error;
+  const config = error.config as RetryableConfig | undefined;
+  if (!config || config._retried || NO_RETRY_PATHS.some((path) => config.url?.startsWith(path))) throw error;
+
+  config._retried = true;
+  refreshing ??= refreshHandler().finally(() => {
+    refreshing = null;
+  });
+  const token = await refreshing;
+  if (!token) throw error;
+
+  config.headers.set("Authorization", `Bearer ${token}`);
+  return api(config);
 });
 
 export class ApiError extends Error {

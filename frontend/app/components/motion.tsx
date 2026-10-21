@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { createContext, useContext, useState, useSyncExternalStore } from "react";
 
 const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
@@ -86,10 +87,10 @@ export function FloatingControls() {
       {chatOpen && (
         <div className="chat-pop" role="dialog" aria-label="Help">
           <h3>Hi there. How can we help?</h3>
-          <p>Questions about writing, publishing or your account — our team usually replies within a day.</p>
-          <a className="pill pill--dark" href="mailto:hello@planit.app">
+          <p>Questions about investing, SIPs or your existing investments? Send us a message and we&rsquo;ll get back to you.</p>
+          <Link className="pill pill--dark" href="/contact">
             Message us
-          </a>
+          </Link>
         </div>
       )}
       <div className="floating">

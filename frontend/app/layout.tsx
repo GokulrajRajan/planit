@@ -17,8 +17,9 @@ const futura = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Planit — Write more. Reach more.",
-  description: "Planit is the calm, beautiful home for everything you write and publish.",
+  title: { default: "Planit – Start Early", template: "%s | Planit" },
+  description:
+    "Planit helps you invest in mutual funds with a clear plan: SIPs, goal planning, retirement and tax-saving investments, explained simply.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

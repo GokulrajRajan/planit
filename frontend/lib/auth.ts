@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { api, type ApiEnvelope } from "./api";
+import { api, onAccessTokenExpired, type ApiEnvelope } from "./api";
 
 export type User = {
   id: number;
@@ -42,20 +42,40 @@ function readCookie(name: string) {
   return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 }
 
-async function restoreSession() {
+function endSession() {
+  accessToken = null;
+  emit(ANONYMOUS);
+}
+
+/** Trades the httpOnly refresh cookie for a new access token; ends the session if that fails. */
+async function refreshAccessToken(): Promise<string | null> {
   // flask-jwt-extended sets this readable CSRF cookie alongside the refresh cookie.
   const csrf = readCookie("csrf_refresh_token");
-  if (!csrf) return emit(ANONYMOUS);
+  if (!csrf) {
+    endSession();
+    return null;
+  }
   try {
     const refreshed = await api.post<ApiEnvelope<{ access_token: string }>>("/auth/refresh", null, {
       headers: { "X-CSRF-TOKEN": csrf },
     });
     accessToken = refreshed.data.data.access_token;
+    return accessToken;
+  } catch {
+    endSession();
+    return null;
+  }
+}
+
+onAccessTokenExpired(refreshAccessToken);
+
+async function restoreSession() {
+  if (!(await refreshAccessToken())) return;
+  try {
     const me = await api.get<ApiEnvelope<{ user: User }>>("/auth/me");
     emit({ status: "authenticated", user: me.data.data.user });
   } catch {
-    accessToken = null;
-    emit(ANONYMOUS);
+    endSession();
   }
 }
 
@@ -78,11 +98,6 @@ function startSession({ user, access_token }: AuthPayload) {
   return user;
 }
 
-export async function register(input: { name: string; email: string; password: string }) {
-  const res = await api.post<ApiEnvelope<AuthPayload>>("/auth/register", input);
-  return startSession(res.data.data);
-}
-
 export async function login(input: { email: string; password: string }) {
   const res = await api.post<ApiEnvelope<AuthPayload>>("/auth/login", input);
   return startSession(res.data.data);
@@ -94,6 +109,5 @@ export async function logout() {
   } catch {
     // The local session is cleared regardless; an expired token shouldn't trap the user.
   }
-  accessToken = null;
-  emit(ANONYMOUS);
+  endSession();
 }

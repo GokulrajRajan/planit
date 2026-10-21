@@ -1,6 +1,12 @@
 import Link from "next/link";
+import type { Faq } from "@/lib/content/services";
+import { ROUTES } from "@/lib/site";
+import { Odometer } from "./Hero";
 import { Lines, Reveal } from "./reveal";
 import { Scene } from "./scene";
+import { EnquiryForm } from "./site/EnquiryForm";
+import { NewsletterForm } from "./site/NewsletterForm";
+import { FaqList } from "./site/page-kit";
 import { InkIcon } from "./visuals";
 
 const ArrowIcon = () => (
@@ -11,7 +17,7 @@ const ArrowIcon = () => (
 
 export function WordStack({ words }: { words: string[] }) {
   return (
-    <section className="words" aria-label="What you can do with Planit">
+    <section className="words" aria-label="What Planit helps you do">
       <ul>
         {words.map((w) => (
           <li key={w}>{w}</li>
@@ -71,21 +77,120 @@ export function FeaturePanel({
   );
 }
 
+/** "Why choose Planit". */
 export function Manifesto() {
   return (
-    <Scene id="about" hold={0.5}>
+    <Scene id="why-planit" hold={0.5}>
       <div className="manifesto">
         <Reveal className="container">
           <InkIcon className="manifesto__icon" />
           <h2 className="manifesto__title">
-            <Lines text="Welcome to the future of writing" />
+            <Lines text="Investing, made clear" />
           </h2>
           <p className="manifesto__body">
-            <Lines text="Why are we here? Because we knew there was a better way. To write more, publish faster, organize smarter, and actually hear from the people reading you. Welcome to the calmest home for your words. Built for what comes next." />
+            <Lines text="Why Planit? Because investing should feel clear, not confusing. We help you choose mutual funds that fit your goals, set up SIPs that suit your budget, and review your plan as life changes. Plain language, regular check-ins, and commissions that are fully disclosed." />
           </p>
           <p className="manifesto__note" data-block="late">
-            Reading figures shown on this page are illustrative examples of the Planit dashboard and do not represent
-            real accounts.
+            Figures shown on this page are illustrative examples. They are not real accounts and not a promise or
+            guarantee of returns.
+          </p>
+        </Reveal>
+      </div>
+    </Scene>
+  );
+}
+
+export function HowItWorks({ steps }: { steps: { title: string; body: string }[] }) {
+  return (
+    <Scene className="home-section home-section--paper" id="how-it-works">
+      <div className="container">
+        <Reveal>
+          <h2 className="home-section__title">
+            <Lines text="How it works" />
+          </h2>
+          <ol className="steps">
+            {steps.map((step) => (
+              <li key={step.title} data-block="">
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
+      </div>
+    </Scene>
+  );
+}
+
+export function WhoWeServe({ groups }: { groups: { title: string; headline: string; href: string }[] }) {
+  return (
+    <Scene className="home-section" id="who-we-serve">
+      <div className="container">
+        <Reveal>
+          <h2 className="home-section__title">
+            <Lines text="Who we serve" />
+          </h2>
+          <div className="card-grid">
+            {groups.map((group) => (
+              <Link key={group.href} className="card" href={group.href} data-block="">
+                <h3>{group.title}</h3>
+                <p>{group.headline}</p>
+                <span className="card__more">See how we help →</span>
+              </Link>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </Scene>
+  );
+}
+
+/** Rendered only once the admin has entered real figures (see visible_sections.stats). */
+export function Stats({ stats }: { stats: { label: string; value: string; note: string | null }[] }) {
+  return (
+    <Scene className="trusted" id="stats">
+      <div className="container">
+        <Reveal className="stats">
+          {stats.map((stat) => (
+            <div key={stat.label} data-block="">
+              <strong>
+                <Odometer value={stat.value} />
+              </strong>
+              <h3>{stat.label}</h3>
+              {stat.note && <p>{stat.note}</p>}
+            </div>
+          ))}
+        </Reveal>
+      </div>
+    </Scene>
+  );
+}
+
+/** Rendered only once real testimonials are published (see visible_sections.testimonials). */
+export function Testimonials({ testimonials }: { testimonials: { id: number; author_name: string; author_detail: string | null; content: string }[] }) {
+  return (
+    <Scene className="home-section home-section--paper" id="testimonials">
+      <div className="container">
+        <Reveal>
+          <h2 className="home-section__title">
+            <Lines text="What our clients say" />
+          </h2>
+          <ul className="quotes">
+            {testimonials.map((t) => (
+              <li key={t.id} data-block="">
+                <blockquote>
+                  <p>&ldquo;{t.content}&rdquo;</p>
+                  <footer>
+                    <strong>{t.author_name}</strong>
+                    {t.author_detail && <span>{t.author_detail}</span>}
+                  </footer>
+                </blockquote>
+              </li>
+            ))}
+          </ul>
+          <p className="manifesto__note" data-block="late">
+            Testimonials reflect individual experiences of our service. They are not an indication of future
+            performance or of returns.
           </p>
         </Reveal>
       </div>
@@ -99,28 +204,13 @@ export function Newsletter() {
       <div className="container">
         <Reveal className="newsletter__card">
           <h2 className="newsletter__title" data-block="">
-            TLDR
-            <svg viewBox="0 0 64 64" aria-hidden="true">
-              <defs>
-                <radialGradient id="tldr-face" cx="0.35" cy="0.3" r="0.8">
-                  <stop offset="0" stopColor="#ffe68a" />
-                  <stop offset="0.6" stopColor="#f6c533" />
-                  <stop offset="1" stopColor="#d99a12" />
-                </radialGradient>
-              </defs>
-              <circle cx="32" cy="32" r="30" fill="url(#tldr-face)" />
-              <path d="M17 26c2-4 8-4 10 0M37 26c2-4 8-4 10 0" stroke="#5a3a08" strokeWidth="3.2" fill="none" strokeLinecap="round" />
-              <path d="M19 38c6 9 20 9 26 0" stroke="#5a3a08" strokeWidth="3.2" fill="#7a3d0c" strokeLinecap="round" />
-              <ellipse cx="22" cy="18" rx="7" ry="4" fill="#fff" opacity="0.45" />
-            </svg>
+            The Planit Brief
           </h2>
           <p className="newsletter__body">
-            <Lines text="A weekly dose of writing, culture, and enough publishing news to make you sound smart at parties" />
+            <Lines text="A short monthly note on markets, mutual funds and money habits, in plain language" />
           </p>
           <div data-block="late">
-            <Link href="#newsletter" className="pill pill--outline pill--lg">
-              Read the latest newsletter
-            </Link>
+            <NewsletterForm />
           </div>
         </Reveal>
       </div>
@@ -128,74 +218,45 @@ export function Newsletter() {
   );
 }
 
-const STATS = [
-  { value: "2.4M", title: "Monthly reads", body: "Stories discovered through categories, tags and search every month." },
-  { value: "18,000+", title: "Published posts", body: "From weekend journals to long-form essays, all in one calm editor." },
-  { value: "4.9", title: "Average rating", body: "Writers love how quiet, fast and focused the whole experience feels." },
-];
-
-export function Trusted() {
+export function HomeFaq({ faqs }: { faqs: Faq[] }) {
   return (
-    <Scene className="trusted">
+    <Scene className="home-section" id="faq">
       <div className="container">
         <Reveal>
-          <h2 className="trusted__title">
-            <Lines text="Trusted by over 40,000 writers" />
+          <h2 className="home-section__title">
+            <Lines text="Questions, answered" />
           </h2>
+          <div data-block="">
+            <FaqList faqs={faqs} />
+          </div>
+          <p className="section-link" data-block="late">
+            <Link href={ROUTES.faqs}>See all FAQs →</Link>
+          </p>
         </Reveal>
-        <Reveal className="stats">
-          {STATS.map((s) => (
-            <div key={s.title} data-block="">
-              <strong>{s.value}</strong>
-              <h3>{s.title}</h3>
-              <p>{s.body}</p>
-            </div>
-          ))}
-        </Reveal>
-        <div className="trusted__cta">
-          <Link href="/register" className="pill pill--dark pill--lg">
-            Start writing for free
-          </Link>
-        </div>
       </div>
     </Scene>
   );
 }
 
-const FOOTER = [
-  { title: "Product", links: ["Editor", "Categories", "Tags", "Dashboard"] },
-  { title: "Community", links: ["Discover", "Writers", "Newsletter", "Events"] },
-  { title: "Resources", links: ["Guides", "Help centre", "Changelog", "Status"] },
-  { title: "Company", links: ["About", "Careers", "Privacy", "Terms"] },
-];
-
-export function Footer() {
+export function HomeEnquiry() {
   return (
-    <footer className="footer">
+    <Scene className="home-section home-section--paper" id="enquiry">
       <div className="container">
-        <div className="footer__grid">
-          <div className="footer__brand">
-            <span className="wordmark">Planit</span>
-            <p>The calm, beautiful home for everything you write and publish.</p>
+        <Reveal className="two-col">
+          <div>
+            <h2 className="home-section__title">
+              <Lines text="Book a free consultation" />
+            </h2>
+            <p className="section-intro" data-block="">
+              Tell us a little about yourself and what you&rsquo;d like help with. We&rsquo;ll get back to you to
+              find a time that suits you. No obligation, no jargon.
+            </p>
           </div>
-          {FOOTER.map((col) => (
-            <div key={col.title}>
-              <h4>{col.title}</h4>
-              <ul>
-                {col.links.map((l) => (
-                  <li key={l}>
-                    <a href="#">{l}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="footer__legal">
-          <span>© {new Date().getFullYear()} Planit. All rights reserved.</span>
-          <span>Made for people who write.</span>
-        </div>
+          <div data-block="late">
+            <EnquiryForm />
+          </div>
+        </Reveal>
       </div>
-    </footer>
+    </Scene>
   );
 }
