@@ -8,6 +8,7 @@ from app.models.announcement import Announcement
 from app.models.team import TeamMember
 from app.schemas.settings_schema import SECTION_KEYS
 from app.services.post_service import create_post
+from app.services.settings_service import DEFAULT_PORTAL_URL
 
 
 def _settings(client) -> dict:
@@ -31,11 +32,20 @@ def test_defaults_are_empty_placeholders(client):
         "euin_valid_until": None,
         "cin": None,
     }
-    assert settings["portal_url"] is None
+    assert settings["portal_url"] == DEFAULT_PORTAL_URL
     assert settings["stats"] == []
     assert settings["sections"] == {key: True for key in SECTION_KEYS}
-    # Nothing has been filled in, so only sections that need no data are visible.
-    assert {key for key, visible in settings["visible_sections"].items() if visible} == {"newsletter", "faq"}
+    # Nothing has been filled in, so only sections that need no data, and the client login with its
+    # default link, are visible.
+    visible = {key for key, visible in settings["visible_sections"].items() if visible}
+    assert visible == {"newsletter", "faq", "client_login"}
+
+
+def test_clearing_the_portal_url_hides_client_login(client, admin_headers):
+    settings = _patch(client, admin_headers, {"portal_url": ""}).get_json()["data"]["settings"]
+
+    assert settings["portal_url"] is None
+    assert settings["visible_sections"]["client_login"] is False
 
 
 def test_updating_requires_an_admin(client, reader_headers):

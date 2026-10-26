@@ -16,8 +16,8 @@
   --color-ink: #2d2a28;
   --color-butter: #ecdfa6;
 
-  /* Planit brand, sampled from the logo (navy lettering, orange-to-yellow alpha). Approximate until the
-     client confirms exact values; the admin can override primary and accent in Site settings → Branding
+  /* Planit brand, matched to the logo (public/brand/planit-logo.png): navy lettering and the
+     orange-to-yellow alpha. The admin can override primary and accent in Site settings → Branding
      (see lib/brand.ts). */
   --brand-primary: #032b66;
   --brand-on-primary: #ffffff;
@@ -187,13 +187,13 @@
 }
 
 .pill--outline {
-  border-color: var(--color-graphite);
-  color: var(--color-graphite);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
   background: transparent;
 }
 
 .pill--outline:hover {
-  background: rgba(50, 48, 47, 0.07);
+  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
 }
 
 .pill--light {
@@ -301,8 +301,9 @@
   justify-content: center;
   min-height: 40px;
   padding: 8px 52px;
-  background: var(--brand-accent);
-  color: var(--brand-on-accent);
+  /* The logo's navy, so the bar sits with the header instead of competing with the orange hero button. */
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   font-size: 14px;
   line-height: 1.35;
   text-align: center;
@@ -314,7 +315,14 @@
 
 .announce a {
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--brand-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+
+.announce a:hover {
+  color: var(--brand-accent);
 }
 
 .announce__close {
@@ -334,7 +342,7 @@
 }
 
 .announce__close:hover {
-  background: rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, currentColor 15%, transparent);
 }
 
 .header {
@@ -367,6 +375,10 @@
   height: 40px;
   /* Drops a white logo background into light surfaces; no effect on a transparent PNG. */
   mix-blend-mode: multiply;
+}
+
+.header__logo img {
+  height: 46px;
 }
 
 .wordmark {
@@ -550,9 +562,14 @@
   outline-offset: 2px;
 }
 
+/* On the navy announcement bar the dark ring would disappear. */
+.site-top .announce a:focus-visible,
+.site-top .announce button:focus-visible {
+  outline-color: currentColor;
+}
+
 @media (max-width: 1199px) {
-  .header__nav,
-  .header__login {
+  .header__nav {
     display: none;
   }
 
@@ -567,6 +584,17 @@
   }
 }
 
+/* Just above the breakpoint the logo, full menu and both buttons only fit with tighter spacing. */
+@media (min-width: 1200px) and (max-width: 1319px) {
+  .header__bar {
+    gap: 12px;
+  }
+
+  .header__nav-trigger {
+    padding: 0 10px;
+  }
+}
+
 @media (max-width: 640px) {
   .header__bar {
     gap: 8px;
@@ -576,6 +604,15 @@
 
   .header__logo {
     font-size: 24px;
+  }
+
+  .header__logo img {
+    height: 40px;
+  }
+
+  /* No room beside the consultation button on phones; Client Login stays in the menu. */
+  .header__login {
+    display: none;
   }
 
   .header__cta {
@@ -3786,6 +3823,72 @@ a.card:focus-visible,
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ───────────── Banner and notices (admin announcements) ───────────── */
+
+.home-banner {
+  background: var(--color-paper);
+  border-block: 1px solid var(--color-stone);
+  padding-block: 20px;
+}
+
+.home-banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  border-left: 4px solid var(--brand-accent);
+  padding-left: 16px;
+}
+
+.home-banner__text {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.notice-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notice {
+  padding: 16px 18px;
+  border: 1px solid var(--color-stone);
+  border-left: 4px solid var(--brand-primary);
+  border-radius: 12px;
+  background: var(--color-paper);
+}
+
+.notice p {
+  margin: 0;
+  color: var(--color-ink);
+}
+
+.notice__link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--brand-primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ───────────── Admin panel ───────────── */
+
+/* The shadcn tokens with the Planit navy as the primary colour. Set on the root (not .admin) so dialogs,
+   sheets and toasts, which render in portals outside the admin wrapper, pick it up too. */
+html:has(.admin) {
+  --primary: #032b66;
+  --primary-foreground: #ffffff;
+  --ring: oklch(0.62 0.09 258);
 }
 
 @layer base {

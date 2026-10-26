@@ -30,7 +30,7 @@ export function LoginForm() {
     setFormError(null);
     try {
       await login(values);
-      router.push("/");
+      router.push("/admin");
     } catch (err) {
       applyServerError(err, ["email", "password"], setError, setFormError);
     }

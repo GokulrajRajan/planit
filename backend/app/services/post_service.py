@@ -54,12 +54,18 @@ def list_published_posts(page: int, per_page: int, category_slug=None, tag_slug=
     return query.paginate(page=page, per_page=per_page, error_out=False)
 
 
-def list_own_posts(user: User, page: int, per_page: int, post_type=None):
-    query = Post.query.order_by(Post.created_at.desc())
+def list_own_posts(user: User, page: int, per_page: int, post_type=None, status=None, search=None):
+    """Every post an admin can manage (all of them), or an author's own; drafts included."""
+    query = Post.query.order_by(Post.created_at.desc(), Post.id.desc())
     if not user.is_admin:
         query = query.filter_by(author_id=user.id)
     if post_type:
         query = query.filter(Post.post_type == post_type)
+    if status:
+        query = query.filter(Post.status == status)
+    if search:
+        like = f"%{search}%"
+        query = query.filter(db.or_(Post.title.ilike(like), Post.excerpt.ilike(like)))
     return query.paginate(page=page, per_page=per_page, error_out=False)
 
 

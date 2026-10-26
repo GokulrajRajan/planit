@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { OFFICIAL_LINKS } from "@/lib/official-links";
 import { ROUTES } from "@/lib/site";
-import { getSiteSettings } from "@/lib/site-data";
+import { getAnnouncements, getSiteSettings } from "@/lib/site-data";
+import { NoticeList } from "../../components/site/notices";
 import { CheckList, PageHero, Section } from "../../components/site/page-kit";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ const External = ({ name }: { name: keyof typeof OFFICIAL_LINKS }) => (
 );
 
 export default async function HelpDeskPage() {
-  const settings = await getSiteSettings();
+  const [settings, notices] = await Promise.all([getSiteSettings(), getAnnouncements("notice")]);
   const officer = settings.grievance_officer;
   const showOfficer = settings.visible_sections.grievance_officer;
 
@@ -29,12 +30,19 @@ export default async function HelpDeskPage() {
         intro="Practical help with the paperwork side of investing: KYC, nominations, lost investments and complaints."
       >
         <nav className="chips" aria-label="On this page">
+          {notices.length > 0 && <a className="chip" href="#notices">Notices</a>}
           <a className="chip" href="#kyc">KYC</a>
           <a className="chip" href="#nominee">Nominees</a>
           <a className="chip" href="#unclaimed">Unclaimed investments</a>
           <a className="chip" href="#complaints">Complaints</a>
         </nav>
       </PageHero>
+
+      {notices.length > 0 && (
+        <Section id="notices" title="Notices">
+          <NoticeList notices={notices} />
+        </Section>
+      )}
 
       <Section tone="paper" id="kyc" title="KYC (Know Your Customer)">
         <div className="two-col">

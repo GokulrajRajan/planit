@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPost } from "@/lib/site-data";
+import { getPost, getSiteSettings } from "@/lib/site-data";
 import { formatDate, PageHero, Section } from "../../../components/site/page-kit";
 import { MARKET_UPDATE_NOTE, PostArticle } from "../../../components/site/posts";
 
 type Props = { params: Promise<{ slug: string }> };
 
 async function findUpdate(slug: string) {
-  const post = await getPost(slug);
-  return post?.post_type === "market_update" ? post : null;
+  const [settings, post] = await Promise.all([getSiteSettings(), getPost(slug)]);
+  return settings.visible_sections.market_update && post?.post_type === "market_update" ? post : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { HEADER_NAV, ROUTES, type NavGroup } from "@/lib/site";
+import { ROUTES, type NavGroup } from "@/lib/site";
 import type { Announcement } from "@/lib/site-data";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { Logo } from "./Logo";
@@ -18,10 +18,13 @@ const groupId = (group: NavGroup) => group.label.toLowerCase().replace(/\s+/g, "
 const isInGroup = (group: NavGroup, pathname: string) => group.links.some((link) => link.href === pathname);
 
 export function SiteHeader({
+  nav,
   logoUrl,
   portalUrl,
   announcement,
 }: {
+  /** lib/site.ts headerNav(): the menu without links to hidden sections. */
+  nav: NavGroup[];
   logoUrl: string | null;
   /** Only passed once the client's portal link is set in site settings. */
   portalUrl: string | null;
@@ -92,7 +95,7 @@ export function SiteHeader({
 
           <nav className="header__nav" aria-label="Main">
             <ul className="header__nav-list">
-              {HEADER_NAV.map((group) => {
+              {nav.map((group) => {
                 const open = openDropdown === group.label;
                 return (
                   <li
@@ -166,7 +169,7 @@ export function SiteHeader({
         </div>
 
         <nav id="mobile-menu" className="header__mobile" aria-label="Main" hidden={!menuOpen}>
-          {HEADER_NAV.map((group) => (
+          {nav.map((group) => (
             <details key={group.label} className="header__group" open={isInGroup(group, pathname) || undefined}>
               <summary>
                 {group.label}

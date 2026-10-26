@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 
-from app.models.post import PostType
+from app.models.post import PostStatus, PostType
 from app.models.user import UserRole
 from app.schemas.post_schema import (
     post_create_schema,
@@ -57,8 +57,26 @@ def get_posts():
 def get_my_posts():
     user = get_user_or_404(int(get_jwt_identity()))
     page, per_page = pagination_args()
-    pagination = list_own_posts(user, page=page, per_page=per_page, post_type=choice_arg("type", PostType.ALL))
+    pagination = list_own_posts(
+        user,
+        page=page,
+        per_page=per_page,
+        post_type=choice_arg("type", PostType.ALL),
+        status=choice_arg("status", PostStatus.ALL),
+        search=request.args.get("search"),
+    )
     return success(data=paginated_data(pagination, posts_summary_schema, "posts"))
+
+
+@posts_bp.get("/id/<int:post_id>")
+@role_required(UserRole.AUTHOR, UserRole.ADMIN)
+def get_post_by_id(post_id: int):
+    """For the admin editor: looks a post up by id, since its slug changes when the title does."""
+    user = get_user_or_404(int(get_jwt_identity()))
+    post = get_post_or_404(post_id)
+    if not can_manage_post(user, post):
+        raise APIError("Post not found", status=404)
+    return success(data={"post": post_schema.dump(post)})
 
 
 @posts_bp.get("/<string:slug>")

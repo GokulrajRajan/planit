@@ -35,16 +35,8 @@ export const ROUTES = {
   commissionDisclosures: "/legal/commission-disclosures",
 } as const;
 
-/** Header dropdowns. "About Us", "Investor Category" and "Knowledge Center" are headings, not pages. */
+/** Header dropdowns, in menu order. "Investor Category", "About Us" and "Knowledge Center" are headings, not pages. */
 export const HEADER_NAV: NavGroup[] = [
-  {
-    label: "About Us",
-    links: [
-      { label: "About Planit", href: "/about" },
-      { label: "Mission and Values", href: "/about/mission-and-values" },
-      { label: "Our Team", href: "/about/team" },
-    ],
-  },
   {
     label: "Services",
     links: [{ label: "Overview", href: "/services" }, ...SERVICES.map(({ label, href }) => ({ label, href }))],
@@ -57,6 +49,14 @@ export const HEADER_NAV: NavGroup[] = [
       { label: "Professionals", href: "/investors/professionals" },
       { label: "Corporates and SMEs", href: "/investors/corporates-and-smes" },
       { label: "NRIs", href: "/investors/nri" },
+    ],
+  },
+  {
+    label: "About Us",
+    links: [
+      { label: "About Planit", href: "/about" },
+      { label: "Mission and Values", href: "/about/mission-and-values" },
+      { label: "Our Team", href: "/about/team" },
     ],
   },
   {
@@ -80,6 +80,14 @@ export const HEADER_NAV: NavGroup[] = [
     ],
   },
 ];
+
+/** The header menu, minus links to sections that are hidden (switched off or still without content). */
+export function headerNav({ marketUpdate }: { marketUpdate: boolean }): NavGroup[] {
+  return HEADER_NAV.map((group) => ({
+    ...group,
+    links: group.links.filter((link) => marketUpdate || link.href !== ROUTES.marketUpdate),
+  }));
+}
 
 export const FOOTER_QUICK_LINKS: NavLink[] = [
   { label: "About Planit", href: "/about" },

@@ -69,9 +69,19 @@ export function toApiError(err: unknown): ApiError {
     return new ApiError(UNREACHABLE, status);
   }
 
-  const fieldErrors: Record<string, string> = {};
-  for (const [field, value] of Object.entries(body.errors ?? {})) {
-    fieldErrors[field] = Array.isArray(value) ? value[0] : String(value);
+  return new ApiError(body.message, status, flattenErrors(body.errors ?? {}));
+}
+
+/**
+ * Marshmallow nests errors for nested schemas and lists ({office: {pincode: [...]}}, {stats: {0: {label: [...]}}});
+ * flattening them to "office.pincode" and "stats.0.label" matches react-hook-form's field names.
+ */
+function flattenErrors(errors: object, prefix = "", out: Record<string, string> = {}) {
+  for (const [key, value] of Object.entries(errors)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (Array.isArray(value) && typeof value[0] === "string") out[path] = value[0];
+    else if (value && typeof value === "object") flattenErrors(value, path, out);
+    else out[path] = String(value);
   }
-  return new ApiError(body.message, status, fieldErrors);
+  return out;
 }

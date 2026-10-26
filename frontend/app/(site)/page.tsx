@@ -1,7 +1,7 @@
 import { HOME_FAQS } from "@/lib/content/faqs";
 import { INVESTOR_CONTENT } from "@/lib/content/investors";
 import { HOW_IT_WORKS } from "@/lib/content/services";
-import { getSiteSettings, getTestimonials } from "@/lib/site-data";
+import { getAnnouncements, getSiteSettings, getTestimonials } from "@/lib/site-data";
 import { Hero } from "../components/Hero";
 import { FloatingControls, MotionProvider } from "../components/motion";
 import {
@@ -16,6 +16,7 @@ import {
   WhoWeServe,
   WordStack,
 } from "../components/sections";
+import { HomeBanner } from "../components/site/notices";
 import { GeoBlocks, Mountain, PhoneMockup, Pie, ProCard } from "../components/visuals";
 
 const WHO_WE_SERVE = INVESTOR_CONTENT.map((group) => ({
@@ -26,7 +27,7 @@ const WHO_WE_SERVE = INVESTOR_CONTENT.map((group) => ({
 
 // The header and footer come from app/(site)/layout.tsx.
 export default async function Home() {
-  const settings = await getSiteSettings();
+  const [settings, banners] = await Promise.all([getSiteSettings(), getAnnouncements("banner")]);
   const visible = settings.visible_sections;
   const testimonials = visible.testimonials ? await getTestimonials() : [];
 
@@ -34,6 +35,8 @@ export default async function Home() {
     <MotionProvider>
       <main id="main">
         <Hero startSipUrl={settings.cta.start_sip_url} />
+
+        <HomeBanner banner={banners[0]} />
 
         <WordStack words={["Invest", "Plan", "Save", "Retire", "Grow"]} />
 

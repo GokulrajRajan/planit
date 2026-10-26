@@ -9,10 +9,14 @@ from app.services.announcement_service import active_announcements_query
 
 SETTINGS_ROW_ID = 1
 
+# The client's login page on Wealth Elite, behind the Client Login buttons. The admin can change it, or clear
+# it to hide the buttons, under Site settings → Links.
+DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login"
+
 
 def _defaults() -> dict:
     defaults = {group: dict.fromkeys(schema().fields) for group, schema in SETTINGS_GROUPS.items()}
-    defaults.update(portal_url=None, stats=[], sections=dict.fromkeys(SECTION_KEYS, True))
+    defaults.update(portal_url=DEFAULT_PORTAL_URL, stats=[], sections=dict.fromkeys(SECTION_KEYS, True))
     return defaults
 
 

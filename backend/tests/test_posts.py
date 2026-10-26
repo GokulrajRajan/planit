@@ -80,3 +80,21 @@ def test_public_posts_do_not_expose_the_author_email(client, posts):
 
     assert set(listed["author"]) == {"id", "name"}
     assert set(detail["author"]) == {"id", "name"}
+
+
+def test_admin_list_filters_by_status_and_search(client, admin_headers, posts):
+    assert _titles(client.get("/api/posts/mine?status=draft", headers=admin_headers)) == ["Draft thoughts"]
+    assert _titles(client.get("/api/posts/mine?search=sip", headers=admin_headers)) == ["What is a SIP?"]
+    assert client.get("/api/posts/mine?status=archived", headers=admin_headers).status_code == 400
+
+
+def test_admin_fetches_a_draft_by_id(client, admin_headers, posts):
+    response = client.get(f"/api/posts/id/{posts['draft'].id}", headers=admin_headers)
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["post"]["content"] == "..."
+
+
+def test_post_by_id_needs_an_editor(client, reader_headers, posts):
+    assert client.get(f"/api/posts/id/{posts['draft'].id}").status_code == 401
+    assert client.get(f"/api/posts/id/{posts['draft'].id}", headers=reader_headers).status_code == 403
