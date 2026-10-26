@@ -83,7 +83,13 @@ const SECTION_KEYS: SectionKey[] = [
 const allSections = (value: boolean) =>
   Object.fromEntries(SECTION_KEYS.map((key) => [key, value])) as Record<SectionKey, boolean>;
 
-/** Used when the API can't be reached: everything that depends on client data stays hidden. */
+/** The client's Wealth Elite login page; also the API's default (DEFAULT_PORTAL_URL in settings_service.py). */
+const DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login";
+
+/**
+ * Used when the API can't be reached (e.g. a deployment without the backend): everything that depends on
+ * client data stays hidden, except the Client Login buttons, whose link is known in advance.
+ */
 const EMPTY_SETTINGS: SiteSettings = {
   branding: { logo_url: null, primary_color: null, accent_color: null },
   office: {
@@ -102,11 +108,11 @@ const EMPTY_SETTINGS: SiteSettings = {
   registration: { arn: null, arn_valid_from: null, arn_valid_until: null, euin: null, euin_valid_until: null, cin: null },
   grievance_officer: { name: null, designation: null, email: null, phone: null, address: null },
   social_links: { facebook: null, instagram: null, linkedin: null, x: null, youtube: null },
-  portal_url: null,
+  portal_url: DEFAULT_PORTAL_URL,
   cta: { start_sip_url: null, open_account_url: null },
   stats: [],
   sections: allSections(true),
-  visible_sections: allSections(false),
+  visible_sections: { ...allSections(false), client_login: true },
 };
 
 // Server-side calls go straight to Flask; the browser goes through the /api rewrite in next.config.ts.

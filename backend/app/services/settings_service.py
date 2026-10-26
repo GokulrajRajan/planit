@@ -10,7 +10,8 @@ from app.services.announcement_service import active_announcements_query
 SETTINGS_ROW_ID = 1
 
 # The client's login page on Wealth Elite, behind the Client Login buttons. The admin can change it, or clear
-# it to hide the buttons, under Site settings → Links.
+# it to hide the buttons, under Site settings → Links. The frontend falls back to the same link when this API
+# can't be reached (EMPTY_SETTINGS in frontend/lib/site-data.ts).
 DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login"
 
 
