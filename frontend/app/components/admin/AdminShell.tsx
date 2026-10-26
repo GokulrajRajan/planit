@@ -16,6 +16,7 @@ import {
   TrendingUpIcon,
   UsersIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { ApiError } from "@/lib/api";
 import { logout, useAuth, type User } from "@/lib/auth";
+import logo from "@/public/brand/planit-logo.png";
 
 export const ADMIN_NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboardIcon },
@@ -124,7 +126,7 @@ function Frame({ user, onLogout, children }: { user: User; onLogout: () => void;
             <Sidebar user={user} onSignOut={signOut} onNavigate={() => setMenuOpen(false)} />
           </SheetContent>
         </Sheet>
-        <span className="font-semibold">Planit admin</span>
+        <AdminBrand />
       </header>
 
       <main id="main" className="min-w-0 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
@@ -138,14 +140,22 @@ function isActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/** The Planit logo and an "admin" label, linking to the dashboard. */
+function AdminBrand({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link href="/admin" className="flex items-center gap-2" onClick={onNavigate}>
+      <Image src={logo} alt="Planit" width={86} height={32} />
+      <span className="text-sm text-muted-foreground">admin</span>
+    </Link>
+  );
+}
+
 function Sidebar({ user, onSignOut, onNavigate }: { user: User; onSignOut: () => void; onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
     <>
       <div className="flex h-14 items-center border-b px-5">
-        <Link href="/admin" className="font-semibold tracking-tight" onClick={onNavigate}>
-          Planit <span className="font-normal text-muted-foreground">admin</span>
-        </Link>
+        <AdminBrand onNavigate={onNavigate} />
       </div>
       <nav aria-label="Admin" className="flex-1 overflow-y-auto p-3">
         <ul className="space-y-0.5">
