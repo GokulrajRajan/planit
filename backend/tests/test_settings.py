@@ -8,7 +8,7 @@ from app.models.announcement import Announcement
 from app.models.team import TeamMember
 from app.schemas.settings_schema import SECTION_KEYS
 from app.services.post_service import create_post
-from app.services.settings_service import DEFAULT_PORTAL_URL
+from app.services.settings_service import DEFAULT_OPEN_ACCOUNT_URL, DEFAULT_PORTAL_URL
 
 
 def _settings(client) -> dict:
@@ -33,6 +33,7 @@ def test_defaults_are_empty_placeholders(client):
         "cin": None,
     }
     assert settings["portal_url"] == DEFAULT_PORTAL_URL
+    assert settings["cta"] == {"start_sip_url": None, "open_account_url": DEFAULT_OPEN_ACCOUNT_URL}
     assert settings["stats"] == []
     assert settings["sections"] == {key: True for key in SECTION_KEYS}
     # Nothing has been filled in, so only sections that need no data, and the client login with its
@@ -46,6 +47,15 @@ def test_clearing_the_portal_url_hides_client_login(client, admin_headers):
 
     assert settings["portal_url"] is None
     assert settings["visible_sections"]["client_login"] is False
+
+
+def test_the_demat_account_link_can_be_changed_or_cleared(client, admin_headers):
+    partner_link = "https://www.motilaloswal.com/open-demat-account?ref=planit"
+    changed = _patch(client, admin_headers, {"cta": {"open_account_url": partner_link}})
+    assert changed.get_json()["data"]["settings"]["cta"]["open_account_url"] == partner_link
+
+    cleared = _patch(client, admin_headers, {"cta": {"open_account_url": ""}})
+    assert cleared.get_json()["data"]["settings"]["cta"]["open_account_url"] is None
 
 
 def test_updating_requires_an_admin(client, reader_headers):

@@ -5,8 +5,8 @@ import { getSiteSettings } from "@/lib/site-data";
 import { PageHero, Section } from "../../components/site/page-kit";
 
 export const metadata: Metadata = {
-  title: "Client Login",
-  description: "Log in to view your investments.",
+  title: "View Your MF Folio",
+  description: "See your mutual fund folios, statements and transactions online.",
 };
 
 /** Links out to the client's existing investment portal; this site has no client accounts of its own. */
@@ -17,14 +17,14 @@ export default async function ClientLoginPage() {
   return (
     <main id="main">
       <PageHero
-        crumbs={[{ label: "Client Login", href: "" }]}
-        title="Client login"
-        intro="View your portfolio, statements and transactions in your online investment account."
+        crumbs={[{ label: "View Your MF Folio", href: "" }]}
+        title="View your MF folio"
+        intro="See your mutual fund folios, statements and transactions in your online investment account."
       >
         {portalUrl && (
           <p className="page-hero__actions">
             <a className="pill pill--dark pill--lg" href={portalUrl} target="_blank" rel="noopener noreferrer">
-              Go to the client portal ↗
+              Go to your MF folio ↗
             </a>
           </p>
         )}

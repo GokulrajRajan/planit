@@ -17,6 +17,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         nav={headerNav({ marketUpdate: visible.market_update })}
         logoUrl={logoUrl}
         portalUrl={visible.client_login ? settings.portal_url : null}
+        dematUrl={settings.cta.open_account_url}
         announcement={visible.announcement_bar ? (announcements[0] ?? null) : null}
       />
       {children}

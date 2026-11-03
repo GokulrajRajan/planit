@@ -226,13 +226,19 @@ const LINKS: GroupConfig = {
   fields: [
     {
       name: "portal_url",
-      label: "Client portal URL",
+      label: "“View Your MF Folio” link",
       type: "url",
       wide: true,
-      hint: "Where existing clients log in to see their investments (Wealth Elite). Adds the Client Login buttons; clear it to hide them.",
+      hint: "Where clients log in to see their mutual fund folios (Wealth Elite). Shown at the top of the header and in the footer; clear it to hide it.",
+    },
+    {
+      name: "cta.open_account_url",
+      label: "“Open a Free Demat Account” link",
+      type: "url",
+      wide: true,
+      hint: "Motilal Oswal's account-opening page, or your partner link. Shown at the top of the header, in the footer and at the end of inner pages; clear it to hide it.",
     },
     { name: "cta.start_sip_url", label: "“Start a SIP” link", type: "url", hint: "Adds a Start a SIP button to the home page hero." },
-    { name: "cta.open_account_url", label: "“Open an account” link", type: "url" },
     { name: "social_links.facebook", label: "Facebook", type: "url" },
     { name: "social_links.instagram", label: "Instagram", type: "url" },
     { name: "social_links.linkedin", label: "LinkedIn", type: "url" },

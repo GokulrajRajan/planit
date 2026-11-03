@@ -9,14 +9,17 @@ from app.services.announcement_service import active_announcements_query
 
 SETTINGS_ROW_ID = 1
 
-# The client's login page on Wealth Elite, behind the Client Login buttons. The admin can change it, or clear
-# it to hide the buttons, under Site settings → Links. The frontend falls back to the same link when this API
-# can't be reached (EMPTY_SETTINGS in frontend/lib/site-data.ts).
+# Default links for the "View Your MF Folio" (the client's Wealth Elite login page) and "Open a Free Demat
+# Account" (Motilal Oswal's public account-opening page) buttons. The admin can change either, or clear it to
+# hide its buttons, under Site settings → Links. The frontend falls back to the same links when this API can't
+# be reached (EMPTY_SETTINGS in frontend/lib/site-data.ts).
 DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login"
+DEFAULT_OPEN_ACCOUNT_URL = "https://www.motilaloswal.com/open-demat-account"
 
 
 def _defaults() -> dict:
     defaults = {group: dict.fromkeys(schema().fields) for group, schema in SETTINGS_GROUPS.items()}
+    defaults["cta"]["open_account_url"] = DEFAULT_OPEN_ACCOUNT_URL
     defaults.update(portal_url=DEFAULT_PORTAL_URL, stats=[], sections=dict.fromkeys(SECTION_KEYS, True))
     return defaults
 

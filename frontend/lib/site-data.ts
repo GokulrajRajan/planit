@@ -83,12 +83,15 @@ const SECTION_KEYS: SectionKey[] = [
 const allSections = (value: boolean) =>
   Object.fromEntries(SECTION_KEYS.map((key) => [key, value])) as Record<SectionKey, boolean>;
 
-/** The client's Wealth Elite login page; also the API's default (DEFAULT_PORTAL_URL in settings_service.py). */
+// The API's defaults for these links too (settings_service.py in the backend).
+/** "View Your MF Folio": the client's Wealth Elite login page. */
 const DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login";
+/** "Open a Free Demat Account": Motilal Oswal's public account-opening page. */
+const DEFAULT_OPEN_ACCOUNT_URL = "https://www.motilaloswal.com/open-demat-account";
 
 /**
  * Used when the API can't be reached (e.g. a deployment without the backend): everything that depends on
- * client data stays hidden, except the Client Login buttons, whose link is known in advance.
+ * client data stays hidden, except the MF folio and demat account links, which are known in advance.
  */
 const EMPTY_SETTINGS: SiteSettings = {
   branding: { logo_url: null, primary_color: null, accent_color: null },
@@ -109,7 +112,7 @@ const EMPTY_SETTINGS: SiteSettings = {
   grievance_officer: { name: null, designation: null, email: null, phone: null, address: null },
   social_links: { facebook: null, instagram: null, linkedin: null, x: null, youtube: null },
   portal_url: DEFAULT_PORTAL_URL,
-  cta: { start_sip_url: null, open_account_url: null },
+  cta: { start_sip_url: null, open_account_url: DEFAULT_OPEN_ACCOUNT_URL },
   stats: [],
   sections: allSections(true),
   visible_sections: { ...allSections(false), client_login: true },

@@ -61,7 +61,14 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
               {visible.client_login && settings.portal_url && (
                 <li>
                   <a href={settings.portal_url} target="_blank" rel="noopener noreferrer">
-                    Client Login
+                    View Your MF Folio
+                  </a>
+                </li>
+              )}
+              {settings.cta.open_account_url && (
+                <li>
+                  <a href={settings.cta.open_account_url} target="_blank" rel="noopener noreferrer">
+                    Open a Free Demat Account
                   </a>
                 </li>
               )}

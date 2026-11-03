@@ -14,6 +14,23 @@ const Chevron = () => (
   </svg>
 );
 
+const ExternalArrow = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+    <path d="M7 17L17 7M8 7h9v9" />
+  </svg>
+);
+
+/** A link to another site from the strip above the header bar; it opens in a new tab. */
+function StripLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {children}
+      <ExternalArrow />
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
+  );
+}
+
 const groupId = (group: NavGroup) => group.label.toLowerCase().replace(/\s+/g, "-");
 const isInGroup = (group: NavGroup, pathname: string) => group.links.some((link) => link.href === pathname);
 
@@ -21,13 +38,16 @@ export function SiteHeader({
   nav,
   logoUrl,
   portalUrl,
+  dematUrl,
   announcement,
 }: {
   /** lib/site.ts headerNav(): the menu without links to hidden sections. */
   nav: NavGroup[];
   logoUrl: string | null;
-  /** Only passed once the client's portal link is set in site settings. */
+  /** The client's MF folio portal; only passed while the link is set and switched on in site settings. */
   portalUrl: string | null;
+  /** Where "Open a Free Demat Account" goes (site settings → Links); null hides it. */
+  dematUrl: string | null;
   announcement: Announcement | null;
 }) {
   const pathname = usePathname();
@@ -90,6 +110,12 @@ export function SiteHeader({
       {announcement && <AnnouncementBar announcement={announcement} />}
 
       <header className="header" ref={headerRef}>
+        {(portalUrl || dematUrl) && (
+          <div className="header__strip">
+            {portalUrl && <StripLink href={portalUrl}>View Your MF Folio</StripLink>}
+            {dematUrl && <StripLink href={dematUrl}>Open a Free Demat Account</StripLink>}
+          </div>
+        )}
         <div className="header__bar">
           <Logo logoUrl={logoUrl} className="header__logo" />
 
@@ -138,11 +164,6 @@ export function SiteHeader({
           </nav>
 
           <div className="header__actions">
-            {portalUrl && (
-              <a className="pill pill--outline header__login" href={portalUrl} target="_blank" rel="noopener noreferrer">
-                Client Login
-              </a>
-            )}
             <Link className="pill pill--dark header__cta" href={ROUTES.contact}>
               <span className="header__cta-full">Book a Free Consultation</span>
               <span className="header__cta-short">Free Consultation</span>
@@ -191,11 +212,6 @@ export function SiteHeader({
             </details>
           ))}
           <div className="header__mobile-actions">
-            {portalUrl && (
-              <a className="pill pill--outline pill--lg" href={portalUrl} target="_blank" rel="noopener noreferrer">
-                Client Login
-              </a>
-            )}
             <Link className="pill pill--dark pill--lg" href={ROUTES.contact} onClick={() => setMenuOpenedOn(null)}>
               Book a Free Consultation
             </Link>

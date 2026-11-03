@@ -136,7 +136,7 @@ export function CtaBand({
             )}
             {cta.open_account_url && (
               <SmartLink className="pill pill--light pill--lg" href={cta.open_account_url}>
-                Open Your Account
+                Open a Free Demat Account
               </SmartLink>
             )}
           </div>

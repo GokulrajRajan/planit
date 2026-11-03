@@ -73,9 +73,9 @@ export const SECTION_INFO: Record<SectionKey, { label: string; where: string; ne
     fixHref: "/admin/settings?tab=links",
   },
   client_login: {
-    label: "Client login",
-    where: "Header and footer buttons, and the Client Login page.",
-    needs: "the client portal URL under Links",
+    label: "View Your MF Folio",
+    where: "The link in the strip at the top of the header, the footer, and the /client-login page.",
+    needs: "the MF folio link under Links",
     fixHref: "/admin/settings?tab=links",
   },
 };
