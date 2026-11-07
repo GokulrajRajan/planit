@@ -247,12 +247,12 @@ const LINKS: GroupConfig = {
   ],
 };
 
-/** The logo's own colours, which the website uses while these fields are empty (globals.css). */
-const DEFAULT_COLOURS = { primary_color: "#032b66", accent_color: "#f7a21b" } as const;
-const COLOUR_NAMES = { primary_color: "navy", accent_color: "orange" } as const;
+/** The theme's own colours, which the website uses while these fields are empty (globals.css). */
+const DEFAULT_COLOURS = { primary_color: "#1e3f39", accent_color: "#f69322" } as const;
+const COLOUR_NAMES = { primary_color: "teal", accent_color: "orange" } as const;
 const BUNDLED_LOGO = "/brand/planit-logo.png";
 // The cream page background: the darkest surface where the primary colour is used for text.
-const PAGE_BACKGROUND = "#f5f1ed";
+const PAGE_BACKGROUND = "#fff0e3";
 const isHex = (value: string) => /^#[0-9a-f]{6}$/i.test(value);
 
 function BrandingForm({ settings }: { settings: SiteSettings }) {
@@ -263,7 +263,7 @@ function BrandingForm({ settings }: { settings: SiteSettings }) {
   const accent = ((watch("branding.accent_color") as string | undefined) ?? "").trim();
   const primaryContrast = isHex(primary) ? contrastRatio(primary, PAGE_BACKGROUND) : null;
 
-  const resetToLogoColours = () => {
+  const resetToThemeColours = () => {
     setValue("branding.primary_color", "", { shouldDirty: true });
     setValue("branding.accent_color", "", { shouldDirty: true });
   };
@@ -303,7 +303,7 @@ function BrandingForm({ settings }: { settings: SiteSettings }) {
                     label={key === "primary_color" ? "Primary colour" : "Accent colour"}
                     optional
                     placeholder={DEFAULT_COLOURS[key]}
-                    hint={`Hex, e.g. ${DEFAULT_COLOURS[key]}. Leave empty for the logo's ${COLOUR_NAMES[key]}.`}
+                    hint={`Hex, e.g. ${DEFAULT_COLOURS[key]}. Leave empty for the theme's ${COLOUR_NAMES[key]}.`}
                     registration={register(name)}
                     error={get(formState.errors, name)?.message}
                     className="flex-1"
@@ -329,8 +329,8 @@ function BrandingForm({ settings }: { settings: SiteSettings }) {
             </Callout>
           )}
           {(primary || accent) && (
-            <Button type="button" variant="outline" size="sm" onClick={resetToLogoColours}>
-              <RotateCcwIcon data-icon="inline-start" /> Use the logo colours
+            <Button type="button" variant="outline" size="sm" onClick={resetToThemeColours}>
+              <RotateCcwIcon data-icon="inline-start" /> Use the theme colours
             </Button>
           )}
           <SaveBar pending={save.isPending} dirty={formState.isDirty} />

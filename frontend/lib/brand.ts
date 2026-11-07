@@ -15,9 +15,9 @@ export function contrastRatio(a: string, b: string): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-/** Dark text on light colours and white text on dark ones. */
+/** The theme's dark teal on light colours and its cream on dark ones. */
 function readableTextOn(hex: string): string {
-  return luminance(hex) > 0.4 ? "#1c1a19" : "#ffffff";
+  return luminance(hex) > 0.4 ? "#17332e" : "#fff8f1";
 }
 
 /**

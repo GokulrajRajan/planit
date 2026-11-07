@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { formatINR, formatINRShort, niceTicks, type YearRow } from "@/lib/calculators";
 
-// Validated with the dataviz palette checker against the chart surface (#fcfcfc): lightness band,
-// chroma, colour-blind separation and 3:1 contrast all pass. Brand blue and a deeper brand orange.
-const COLORS = { invested: "#2f5597", gains: "#d9730d" };
-const INK = "#2d2a28";
-const MUTED = "#686664";
-const GRID = "#e4e2e1";
-const SURFACE = "#fcfcfc";
+// Validated with the dataviz palette checker against the chart surface (#fffcf8): lightness band,
+// chroma, colour-blind separation and 3:1 contrast all pass. A brighter take on the theme teal (the
+// theme's own #1e3f39 reads as grey in a chart) and a deeper theme orange.
+const COLORS = { invested: "#00866e", gains: "#d9730d" };
+const INK = "#1e3f39";
+const MUTED = "#4b5a56";
+const GRID = "#efdecb";
+const SURFACE = "#fffcf8";
 
 const HEIGHT = 300;
 const MARGIN = { top: 28, right: 16, bottom: 34, left: 64 };

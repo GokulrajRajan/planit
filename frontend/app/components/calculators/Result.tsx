@@ -1,6 +1,6 @@
 import { MF_RISK_WARNING } from "@/lib/site";
 
-export const SERIES_SWATCH = { invested: "#2f5597", gains: "#d9730d" };
+export const SERIES_SWATCH = { invested: "#00866e", gains: "#d9730d" };
 
 /** The headline figure plus supporting rows. Rows with a swatch match the chart's series. */
 export function ResultCard({

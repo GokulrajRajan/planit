@@ -123,9 +123,9 @@ export function PhoneMockup() {
 
               <div className="phone__row phone__row--muted">
                 <span className="phone__stack">
-                  <i style={{ background: "#032b66" }}>E</i>
-                  <i style={{ background: "#f28c28" }}>D</i>
-                  <i style={{ background: "#7d9cf0" }}>H</i>
+                  <i style={{ background: "#1e3f39" }}>E</i>
+                  <i style={{ background: "#f69322" }}>D</i>
+                  <i style={{ background: "#599288" }}>H</i>
                 </span>
                 <span className="phone__row-title">Equity, debt, hybrid</span>
                 <ArrowRight className="phone__row-end" />
@@ -234,14 +234,14 @@ function mulberry32(seed: number) {
 }
 
 const GEO_COLORS = [
-  ["#f4f3ee", "#dcdad2"],
-  ["#eceae2", "#c9c6bb"],
-  ["#c9d7c0", "#a6bb9b"],
-  ["#9dbb8f", "#6f9a62"],
-  ["#5f9a55", "#3f7a39"],
-  ["#ff6a2b", "#e9531a"],
-  ["#d8d1b8", "#b9b195"],
-  ["#e6efe1", "#c2d3ba"],
+  ["#fff8f1", "#e6dacb"],
+  ["#f6e6d3", "#dcc6aa"],
+  ["#c7dcd6", "#9dbfb7"],
+  ["#8db0a8", "#5e8f86"],
+  ["#3f6b63", "#2a544c"],
+  ["#f69322", "#d9730d"],
+  ["#e7d4be", "#cdb496"],
+  ["#e6efec", "#bcd3cd"],
 ];
 const GEO_WEIGHTS = [4, 3, 3, 2, 1.4, 1.2, 2, 2];
 
@@ -364,10 +364,10 @@ export function Mountain() {
 type Slice = { from: number; to: number; top: string; edge: string; explode: number };
 
 const SLICES: Slice[] = [
-  { from: 100, to: 268, top: "url(#pie-coral)", edge: "#e57f72", explode: 26 },
+  { from: 100, to: 268, top: "url(#pie-teal)", edge: "#3f6b63", explode: 26 },
   { from: 272, to: 352, top: "url(#pie-peach)", edge: "#e9b27b", explode: 16 },
-  { from: 356, to: 392, top: "url(#pie-gold)", edge: "#e5be4f", explode: 34 },
-  { from: 396, to: 456, top: "url(#pie-iris)", edge: "#9fb9e6", explode: 22 },
+  { from: 356, to: 392, top: "url(#pie-orange)", edge: "#d9730d", explode: 34 },
+  { from: 396, to: 456, top: "url(#pie-cream)", edge: "#dcc6aa", explode: 22 },
 ];
 
 const PIE = { cx: 300, cy: 230, r: 220, k: 0.52, depth: 52, glass: 16 };
@@ -421,22 +421,22 @@ export function Pie() {
   return (
     <svg ref={svgRef} className="pie" viewBox="0 0 600 540" aria-hidden="true">
       <defs>
-        <linearGradient id="pie-coral" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f9b2a5" />
-          <stop offset="1" stopColor="#f28a7c" />
+        <linearGradient id="pie-teal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#8db0a8" />
+          <stop offset="1" stopColor="#599288" />
         </linearGradient>
         <linearGradient id="pie-peach" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#fbe0bf" />
           <stop offset="1" stopColor="#f3bf8c" />
         </linearGradient>
-        <linearGradient id="pie-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#fbeaa6" />
-          <stop offset="1" stopColor="#f1c94f" />
+        <linearGradient id="pie-orange" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f9b45e" />
+          <stop offset="1" stopColor="#f69322" />
         </linearGradient>
-        <linearGradient id="pie-iris" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#c8dcff" />
-          <stop offset="0.5" stopColor="#e9f3f6" />
-          <stop offset="1" stopColor="#f6e2b0" />
+        <linearGradient id="pie-cream" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#fffaf4" />
+          <stop offset="0.5" stopColor="#f6e6d3" />
+          <stop offset="1" stopColor="#efdecb" />
         </linearGradient>
         <radialGradient id="pie-shadow">
           <stop offset="0" stopColor="#5a4f48" stopOpacity="0.28" />
@@ -454,7 +454,7 @@ export function Pie() {
             }}
           >
             {PIE_LAYERS.map((d) => (
-              <path key={d} d={wedge(s, 0, 1, d)} fill={d <= PIE.glass ? s.edge : d > PIE.depth - 6 ? "#cfcac5" : "#e8e4e0"} />
+              <path key={d} d={wedge(s, 0, 1, d)} fill={d <= PIE.glass ? s.edge : d > PIE.depth - 6 ? "#dcc9b2" : "#efe2d3"} />
             ))}
             <path d={wedge(s, 0, 1, 0)} fill={s.top} />
           </g>
@@ -468,10 +468,10 @@ export function Pie() {
 
 export function InkIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 120 100" fill="none" stroke="#1b1917" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 120 100" fill="none" stroke="#1e3f39" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
       {[0, 1, 2, 3, 4].map((i) => (
         <g key={i}>
-          <path d={`M62 ${78 - i * 10} h44 a6 6 0 0 1 0 12 h-44 a6 6 0 0 1 0 -12z`} fill={i % 2 ? "#8a8784" : "#fff"} />
+          <path d={`M62 ${78 - i * 10} h44 a6 6 0 0 1 0 12 h-44 a6 6 0 0 1 0 -12z`} fill={i % 2 ? "#8c9a95" : "#fff"} />
         </g>
       ))}
       <path d="M58 30 h50 a6 6 0 0 1 6 6 v0 a6 6 0 0 1 -6 6 h-50 z" fill="#fff" />

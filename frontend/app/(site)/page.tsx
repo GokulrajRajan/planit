@@ -45,8 +45,8 @@ export default async function Home() {
           product="Mutual Funds"
           title="Choose funds that fit your goals, your timeline and your comfort with risk"
           href="/services/mutual-funds"
-          textTone="light"
-          background="radial-gradient(75% 95% at 78% 55%, #d6cbdc 0%, #ada2b4 40%, #7a7080 75%, #645b68 100%)"
+          textTone="dark"
+          background="radial-gradient(75% 95% at 78% 55%, #fffaf4 0%, #fcefe1 40%, #f8e2cb 75%, #f4d8ba 100%)"
           visual={<PhoneMockup />}
           visualClassName="panel__visual--phone"
         />
@@ -56,8 +56,8 @@ export default async function Home() {
           product="SIP Planning"
           title="Invest a fixed amount every month and let the habit do the heavy lifting"
           href="/services/sip-planning"
-          textTone="light"
-          background="radial-gradient(45% 42% at 94% 100%, #ece8ea 0%, rgba(236, 232, 234, 0) 70%), radial-gradient(60% 40% at 45% 0%, rgba(150, 136, 128, 0.35), rgba(150, 136, 128, 0) 70%), linear-gradient(90deg, #5f5450 0%, #7d726d 44%, #a29489 74%, #b1a49c 100%)"
+          textTone="dark"
+          background="radial-gradient(45% 42% at 94% 100%, #fffaf4 0%, rgba(255, 250, 244, 0) 70%), radial-gradient(60% 40% at 45% 0%, rgba(249, 180, 94, 0.22), rgba(249, 180, 94, 0) 70%), linear-gradient(90deg, #fff6ec 0%, #fcecdc 44%, #f8e1ca 74%, #f5d9bd 100%)"
           bleed={<ProCard />}
           hold={0}
         />
@@ -69,7 +69,7 @@ export default async function Home() {
           product="Goal Planning"
           title="A home, an education, a dream holiday. Build every goal, block by block."
           href="/services/goal-planning"
-          textTone="light"
+          textTone="dark"
           bleed={<GeoBlocks />}
         />
 
@@ -79,7 +79,7 @@ export default async function Home() {
           title="Your summit is retirement. Start the climb early, and plan the way down too."
           href="/services/retirement-planning"
           textTone="dark"
-          background="linear-gradient(180deg, #aea9b4 0%, #c6bdcc 10%, #ded2e2 20%, #f1e1f2 30%, #f7e2f0 40%, #f9e1e5 50%, #fae3e0 60%, #f9e2d6 70%, #ffe3d4 80%, #ffdfd1 90%, #ffdccc 100%)"
+          background="linear-gradient(180deg, #cdbba6 0%, #dac9b5 10%, #e6d7c4 20%, #efe0ce 30%, #f6e6d3 40%, #fae8d6 50%, #fde8d4 60%, #fee6d0 70%, #ffe3cc 80%, #ffdfc6 90%, #ffdcc0 100%)"
           bleed={<Mountain />}
           hold={0}
         />

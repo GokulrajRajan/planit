@@ -121,8 +121,8 @@ function TrendChart() {
     <svg className="glass__chart" viewBox="0 0 100 60">
       <defs>
         <linearGradient id={fill} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.34" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0" stopColor="#f69322" stopOpacity="0.22" />
+          <stop offset="1" stopColor="#f69322" stopOpacity="0" />
         </linearGradient>
       </defs>
       {[12, 30, 48].map((y) => (
@@ -406,11 +406,11 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
             disclosed.
           </p>
           <div className="hero__actions">
-            <Link href={ROUTES.contact} className="pill pill--accent pill--lg">
+            <Link href={ROUTES.contact} className="pill pill--dark pill--lg">
               Book a Free Consultation
             </Link>
             {startSipUrl && (
-              <SmartLink href={startSipUrl} className="pill pill--light pill--lg">
+              <SmartLink href={startSipUrl} className="pill pill--outline pill--lg">
                 Start a SIP
               </SmartLink>
             )}

@@ -5,25 +5,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --color-graphite: #32302f;
-  --color-paper: #fcfcfc;
-  --color-linen: #faf8f5;
-  --color-cream: #f5f1ed;
-  --color-fog: #f1f0f0;
-  --color-stone: #e4e2e1;
-  --color-pebble: #686664;
-  --color-charcoal: #09090a;
-  --color-ink: #2d2a28;
-  --color-butter: #ecdfa6;
+  /* The site palette: deep teal, warm cream and orange (the theme the client chose in Nov 2026). */
+  --color-graphite: #1e3f39;
+  --color-paper: #fff8f1;
+  --color-linen: #fff4ea;
+  --color-cream: #fff0e3;
+  --color-fog: #f6e6d3;
+  --color-stone: #efdecb;
+  --color-pebble: #4b5a56;
+  --color-charcoal: #17332e;
+  --color-ink: #1e3f39;
+  --color-butter: #fcdcb4;
 
-  /* Planit brand, matched to the logo (public/brand/planit-logo.png): navy lettering and the
-     orange-to-yellow alpha. The admin can override primary and accent in Site settings → Branding
-     (see lib/brand.ts). */
-  --brand-primary: #032b66;
-  --brand-on-primary: #ffffff;
-  --brand-accent: #f7a21b;
-  --brand-on-accent: #1c1a19;
-  --brand-gradient: linear-gradient(135deg, #f28c28 0%, #fdb913 60%, #ffd200 100%);
+  /* Brand colours for buttons, links and highlights. The admin can override primary and accent in
+     Site settings → Branding (see lib/brand.ts). */
+  --brand-primary: #1e3f39;
+  --brand-on-primary: #fff8f1;
+  --brand-accent: #f69322;
+  --brand-on-accent: #17332e;
+  --brand-gradient: linear-gradient(135deg, #a9600f 0%, #f69322 55%, #f9b45e 100%);
 
   --radius-pill: 1600px;
   --radius-card: 16px;
@@ -228,7 +228,7 @@
 }
 
 .icon-btn:hover {
-  background: rgba(50, 48, 47, 0.07);
+  background: rgba(30, 63, 57, 0.07);
 }
 
 .arrow-btn {
@@ -257,7 +257,7 @@
 }
 
 .panel--dark-text .arrow-btn:hover {
-  background: rgba(45, 42, 40, 0.08);
+  background: rgba(30, 63, 57, 0.08);
 }
 
 /* ───────────── Site header (components/site/Header.tsx) ───────────── */
@@ -353,9 +353,10 @@ html:has(.site) {
 .header {
   width: min(1424px, 100% - 16px);
   margin: 8px auto 0;
-  border: 1px solid rgba(50, 48, 47, 0.06);
+  border: 1px solid rgba(30, 63, 57, 0.06);
   border-radius: 10px;
-  background: rgba(252, 252, 252, 0.95);
+  background: rgba(255, 248, 241, 0.95);
+  box-shadow: 0 10px 30px rgba(30, 63, 57, 0.08);
   color: var(--color-graphite);
 }
 
@@ -367,7 +368,7 @@ html:has(.site) {
   justify-content: flex-end;
   min-height: 32px;
   padding: 0 14px 0 24px;
-  border-bottom: 1px solid rgba(50, 48, 47, 0.08);
+  border-bottom: 1px solid rgba(30, 63, 57, 0.08);
   border-radius: 9px 9px 0 0;
   background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
   font-size: 13px;
@@ -385,7 +386,7 @@ html:has(.site) {
 }
 
 .header__strip a + a {
-  border-left: 1px solid rgba(50, 48, 47, 0.16);
+  border-left: 1px solid rgba(30, 63, 57, 0.16);
 }
 
 .header__strip a:hover {
@@ -405,7 +406,7 @@ html:has(.site) {
   flex: none;
   font-size: 30px;
   line-height: 1;
-  color: #1c1a19;
+  color: #17332e;
 }
 
 .wordmark img {
@@ -489,7 +490,7 @@ html:has(.site) {
   border: 1px solid var(--color-stone);
   border-radius: 14px;
   background: var(--color-paper);
-  box-shadow: 0 12px 32px rgba(45, 42, 40, 0.12);
+  box-shadow: 0 12px 32px rgba(30, 63, 57, 0.12);
   animation: menu-in 0.25s var(--ease-out);
 }
 
@@ -714,8 +715,8 @@ html:has(.site) {
   min-height: 640px;
   overflow: hidden;
   isolation: isolate;
-  color: #fff;
-  background: #6b7a8c;
+  color: var(--color-ink);
+  background: #fff8f1;
 }
 
 .hero__bg,
@@ -728,11 +729,11 @@ html:has(.site) {
 
 .hero__bg {
   background:
-    radial-gradient(60% 55% at 12% 8%, #a49a80 0%, transparent 70%),
-    radial-gradient(55% 60% at 88% 18%, #9d9cba 0%, transparent 70%),
-    radial-gradient(70% 60% at 75% 95%, #7f9c98 0%, transparent 70%),
-    radial-gradient(60% 60% at 8% 85%, #4e6278 0%, transparent 75%),
-    #687a8d;
+    radial-gradient(60% 55% at 62% 4%, #f5d8b8 0%, transparent 70%),
+    radial-gradient(55% 60% at 96% 30%, #f9e4cd 0%, transparent 70%),
+    radial-gradient(70% 60% at 25% 100%, #fffaf5 0%, transparent 70%),
+    radial-gradient(60% 60% at 4% 18%, #fcebd9 0%, transparent 75%),
+    #fff4ea;
   animation: hero-drift 22s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -741,10 +742,10 @@ html:has(.site) {
   content: "";
   inset: 0;
   background:
-    radial-gradient(55% 55% at 20% 15%, #546a85 0%, transparent 70%),
-    radial-gradient(50% 55% at 85% 30%, #a99fbe 0%, transparent 70%),
-    radial-gradient(70% 60% at 60% 100%, #8fa6a3 0%, transparent 70%),
-    #6f7f93;
+    radial-gradient(55% 55% at 40% 0%, #f3d2ae 0%, transparent 70%),
+    radial-gradient(50% 55% at 85% 30%, #fbe7d3 0%, transparent 70%),
+    radial-gradient(70% 60% at 60% 100%, #fff8f1 0%, transparent 70%),
+    #fdefe1;
   opacity: calc(var(--bgp, 0.5) * 0.9);
   will-change: opacity;
 }
@@ -768,7 +769,7 @@ html:has(.site) {
 
 .hero__line path {
   fill: none;
-  stroke: #fff;
+  stroke: #f69322;
   stroke-width: 2.25;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -830,7 +831,7 @@ html:has(.site) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #3b3f46 center / cover no-repeat;
+  background: #1e3f39 center / cover no-repeat;
 }
 
 .hero__glass {
@@ -840,8 +841,8 @@ html:has(.site) {
   flex-direction: column;
   padding: 7% 8%;
   border-radius: calc(var(--card-w) * 0.09);
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.14);
+  border: 1.5px solid rgba(30, 63, 57, 0.12);
+  background: rgba(255, 255, 255, 0.6);
   font-size: calc(var(--card-w) * 0.038);
 }
 
@@ -925,7 +926,7 @@ html:has(.site) {
 }
 
 .glass__ranges span.is-active {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(30, 63, 57, 0.1);
 }
 
 /* Uptrend chart (auth pages): sweeps in left to right, then the latest value pulses and a glint
@@ -939,7 +940,7 @@ html:has(.site) {
 }
 
 .glass__chart-grid {
-  stroke: rgba(255, 255, 255, 0.2);
+  stroke: rgba(30, 63, 57, 0.18);
   stroke-width: 0.4;
   stroke-dasharray: 1.2 1.8;
 }
@@ -947,7 +948,7 @@ html:has(.site) {
 .glass__chart-line,
 .glass__chart-glint {
   fill: none;
-  stroke: #fff;
+  stroke: #f69322;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -961,13 +962,14 @@ html:has(.site) {
   stroke-width: 2.4;
   stroke-dasharray: 0.12 2;
   stroke-dashoffset: 0.14;
-  filter: drop-shadow(0 0 1.5px #fff);
+  stroke: #fff8f1;
+  filter: drop-shadow(0 0 1.5px #f69322);
   animation: chart-glint 4.5s ease-in-out 2.6s infinite;
 }
 
 .glass__chart-dot,
 .glass__chart-pulse {
-  fill: #fff;
+  fill: #1e3f39;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -1147,6 +1149,11 @@ html:has(.site) {
   font-size: 1.04em;
 }
 
+/* On the dark slides the teal wordmark would vanish; it takes the theme's light orange there. */
+.panel--light-text .panel__eyebrow .wordmark {
+  color: #f9b45e;
+}
+
 .panel__title {
   max-width: 11.5em;
   margin: 0 0 30px;
@@ -1203,11 +1210,11 @@ html:has(.site) {
   margin: 12vh 0 0 8.3vw;
   padding: 1%;
   border-radius: 17% / 8.2%;
-  background: linear-gradient(150deg, #6b5a85 0%, #2d2438 18%, #3b3048 50%, #241d2d 82%, #5a4b70 100%);
+  background: linear-gradient(150deg, #4f8077 0%, #17332e 18%, #1e3f39 50%, #142b27 82%, #3f6b63 100%);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-    0 30px 60px -20px rgba(40, 25, 55, 0.45);
-  color: #141414;
+    0 30px 60px -20px rgba(23, 51, 46, 0.45);
+  color: #17332e;
   container-type: inline-size;
 }
 
@@ -1218,7 +1225,7 @@ html:has(.site) {
   position: absolute;
   width: 1.1%;
   border-radius: 2px;
-  background: #3a3046;
+  background: #1e3f39;
 }
 
 .phone::before {
@@ -1226,8 +1233,8 @@ html:has(.site) {
   top: 17%;
   height: 4%;
   box-shadow:
-    0 calc(100cqi / 0.477 * 0.075) 0 #3a3046,
-    0 calc(100cqi / 0.477 * 0.15) 0 #3a3046;
+    0 calc(100cqi / 0.477 * 0.075) 0 #1e3f39,
+    0 calc(100cqi / 0.477 * 0.15) 0 #1e3f39;
 }
 
 .phone::after {
@@ -1248,7 +1255,7 @@ html:has(.site) {
   height: 100%;
   overflow: hidden;
   border-radius: 14.5% / 6.9%;
-  background: linear-gradient(180deg, #f6dccc 0%, #ece0ee 20%, #f3f1f4 42%, #f5f4f5 100%);
+  background: linear-gradient(180deg, #f6dccc 0%, #f6e6d3 20%, #fbf3ea 42%, #fff8f1 100%);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: 3.35cqi;
   letter-spacing: -0.005em;
@@ -1300,7 +1307,7 @@ html:has(.site) {
 }
 
 .phone__page--pro {
-  background: #f5f4f5;
+  background: #fff8f1;
 }
 
 .phone__scroll {
@@ -1343,7 +1350,7 @@ html:has(.site) {
   gap: 0.6em;
   font-size: 0.85em;
   font-weight: 500;
-  color: #3a3838;
+  color: #17332e;
 }
 
 .phone__pager span {
@@ -1379,7 +1386,7 @@ html:has(.site) {
   height: 0.62em;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.06);
-  color: #8b8890;
+  color: #75817d;
 }
 
 .phone .phone__eye svg {
@@ -1391,7 +1398,7 @@ html:has(.site) {
   margin: 0.5em 0 0;
   text-align: center;
   font-size: 0.8em;
-  color: #8b8890;
+  color: #75817d;
 }
 
 .phone__grid {
@@ -1406,7 +1413,7 @@ html:has(.site) {
 .phone__group {
   border-radius: 1.15em;
   background: #fff;
-  box-shadow: 0 1px 2px rgba(30, 20, 40, 0.04);
+  box-shadow: 0 1px 2px rgba(23, 51, 46, 0.05);
 }
 
 .phone__card {
@@ -1416,7 +1423,7 @@ html:has(.site) {
 .phone__card p {
   margin: 0;
   font-size: 0.85em;
-  color: #807d84;
+  color: #6b7773;
 }
 
 .phone__card strong {
@@ -1448,7 +1455,7 @@ html:has(.site) {
 }
 
 .phone__row--muted {
-  background: #ecebee;
+  background: #f3ebe2;
   box-shadow: none;
 }
 
@@ -1473,7 +1480,7 @@ html:has(.site) {
   width: 1.9em;
   height: 1.9em;
   margin-right: -0.45em;
-  border: 2px solid #ecebee;
+  border: 2px solid #f3ebe2;
   border-radius: 0.5em;
   color: #fff;
   font-size: 0.8em;
@@ -1487,7 +1494,7 @@ html:has(.site) {
   width: 1.75em;
   height: 1.75em;
   border-radius: 0.35em;
-  background: #111;
+  background: #1e3f39;
   color: #fff;
   font-family: var(--font-serif), serif;
   font-weight: 700;
@@ -1515,11 +1522,11 @@ html:has(.site) {
   align-items: center;
   padding: 0.8em 0;
   font-size: 0.95em;
-  color: #8b8890;
+  color: #75817d;
 }
 
 .phone__group-head .phone__row-end {
-  color: #141414;
+  color: #17332e;
 }
 
 .phone__chev {
@@ -1528,7 +1535,7 @@ html:has(.site) {
   width: 1.6em;
   height: 1.6em;
   border-radius: 50%;
-  background: #f0eff1;
+  background: #f6efe8;
 }
 
 .phone .phone__chev svg {
@@ -1550,7 +1557,7 @@ html:has(.site) {
   margin-top: 0.3em;
   font-size: 0.78em;
   font-weight: 400;
-  color: #9a979e;
+  color: #8c9a95;
 }
 
 .phone__emoji {
@@ -1566,9 +1573,9 @@ html:has(.site) {
   justify-content: space-around;
   height: 9.5%;
   padding-top: 0.9em;
-  background: rgba(255, 255, 255, 0.96);
-  border-top: 1px solid #efedf0;
-  color: #a9a6ad;
+  background: rgba(255, 248, 241, 0.96);
+  border-top: 1px solid #f2e9df;
+  color: #9da7a3;
 }
 
 .phone__tabs::after {
@@ -1580,11 +1587,11 @@ html:has(.site) {
   height: 0.32em;
   transform: translateX(-50%);
   border-radius: 99px;
-  background: #111;
+  background: #1e3f39;
 }
 
 .phone__tabs .is-active {
-  color: #111;
+  color: #1e3f39;
 }
 
 .phone__pro-top {
@@ -1593,7 +1600,7 @@ html:has(.site) {
   align-items: center;
   margin-top: 1.6em;
   font-size: 0.85em;
-  color: #807d84;
+  color: #6b7773;
 }
 
 .phone__pro-top strong {
@@ -1601,7 +1608,7 @@ html:has(.site) {
   font-size: 2.6em;
   font-weight: 600;
   letter-spacing: -0.03em;
-  color: #141414;
+  color: #17332e;
 }
 
 .phone__minicard {
@@ -1767,7 +1774,7 @@ html:has(.site) {
   height: calc(var(--cw) * 0.36);
   transform: translate(-50%, -50%) rotate(22deg);
   border-radius: 50%;
-  background: radial-gradient(closest-side, #fffaff 0%, rgba(250, 242, 250, 0.92) 30%, rgba(232, 216, 232, 0.55) 62%, rgba(220, 200, 220, 0) 100%);
+  background: radial-gradient(closest-side, #fffaf4 0%, rgba(255, 244, 234, 0.92) 30%, rgba(246, 230, 211, 0.55) 62%, rgba(239, 222, 203, 0) 100%);
   filter: blur(12px);
 }
 
@@ -1776,7 +1783,7 @@ html:has(.site) {
   position: absolute;
   inset: -70% -40%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(242, 232, 242, 0.6), rgba(242, 232, 242, 0));
+  background: radial-gradient(closest-side, rgba(255, 240, 227, 0.6), rgba(255, 240, 227, 0));
   filter: blur(30px);
 }
 
@@ -1789,7 +1796,7 @@ html:has(.site) {
   height: calc(var(--cw) * 0.17);
   transform: translate(-50%, -50%) rotate(8deg);
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(126, 86, 120, 0.95), rgba(136, 100, 130, 0.7) 50%, rgba(140, 108, 135, 0));
+  background: radial-gradient(closest-side, rgba(74, 52, 34, 0.85), rgba(90, 64, 42, 0.6) 50%, rgba(90, 64, 42, 0));
   filter: blur(9px);
 }
 
@@ -1821,7 +1828,7 @@ html:has(.site) {
   inset: 0;
   z-index: -1;
   overflow: hidden;
-  background: #d9d6cc;
+  background: #e6dacb;
 }
 
 .geo__layer {
@@ -1836,14 +1843,14 @@ html:has(.site) {
   border-radius: 2px;
   box-shadow:
     inset 2px 0 0 rgba(255, 255, 255, 0.35),
-    -6px 0 18px rgba(40, 40, 30, 0.12);
+    -6px 0 18px rgba(23, 51, 46, 0.12);
 }
 
 .geo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(70, 64, 54, 0.38) 0%, rgba(70, 64, 54, 0.12) 40%, transparent 60%);
+  background: linear-gradient(90deg, rgba(255, 248, 241, 0.94) 0%, rgba(255, 248, 241, 0.6) 40%, transparent 62%);
 }
 
 /* Mountain */
@@ -1932,7 +1939,7 @@ html:has(.site) {
   font-size: clamp(64px, 8.2vw, 116px);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: #1d1b19;
+  color: #17332e;
 }
 
 .newsletter__title svg {
@@ -1945,12 +1952,12 @@ html:has(.site) {
   margin: 0 auto 36px;
   font-size: clamp(24px, 3.3vw, 52px);
   line-height: 1.22;
-  color: #3b3632;
+  color: #2a544c;
 }
 
 .newsletter .pill {
-  border-color: #6b6050;
-  color: #3b3632;
+  border-color: #2a544c;
+  color: #2a544c;
 }
 
 /* ───────────── Trusted + stats ───────────── */
@@ -1980,7 +1987,7 @@ html:has(.site) {
 
 .stats > div {
   padding-top: 24px;
-  border-top: 1px solid #d9d4cf;
+  border-top: 1px solid #e7d4be;
 }
 
 .stats strong {
@@ -2059,7 +2066,7 @@ html:has(.site) {
 }
 
 .footer .social .icon-btn {
-  border-color: rgba(50, 48, 47, 0.3);
+  border-color: rgba(30, 63, 57, 0.3);
 }
 
 .footer__compliance {
@@ -2141,12 +2148,12 @@ html:has(.site) {
 .floating .icon-btn {
   width: 48px;
   height: 48px;
-  border-color: rgba(50, 48, 47, 0.35);
-  background: rgba(252, 252, 252, 0.94);
+  border-color: rgba(30, 63, 57, 0.35);
+  background: rgba(255, 248, 241, 0.94);
 }
 
 .floating .icon-btn:hover {
-  background: #fff;
+  background: #fffcf8;
 }
 
 .chat-pop {
@@ -2280,11 +2287,11 @@ html:has(.site) {
 }
 
 .field__input::placeholder {
-  color: #a19e9b;
+  color: #7a8884;
 }
 
 .field__input:hover {
-  border-color: #cfcac6;
+  border-color: #dcc6aa;
 }
 
 .field__input:focus {
@@ -2528,7 +2535,7 @@ html:has(.site) {
   margin-top: 5%;
   padding: 0.35em 0.9em;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(30, 63, 57, 0.08);
   font-size: 0.85em;
   letter-spacing: 0.04em;
 }
@@ -2605,7 +2612,7 @@ html:has(.site) {
   margin: 0;
   font-size: clamp(18px, 1.6vw, 22px);
   line-height: 1.5;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .page-hero__meta {
@@ -2729,7 +2736,7 @@ html:has(.site) {
 }
 
 a.card:hover {
-  border-color: #cfcac6;
+  border-color: #dcc6aa;
   transform: translateY(-2px);
 }
 
@@ -2873,7 +2880,7 @@ a.card:focus-visible,
   max-width: 44em;
   margin: 0 0 22px;
   line-height: 1.65;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .note {
@@ -2884,13 +2891,13 @@ a.card:focus-visible,
   background: var(--color-fog);
   font-size: 14px;
   line-height: 1.55;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .empty-state {
   margin: 0;
   padding: 28px;
-  border: 1px dashed #d4cfca;
+  border: 1px dashed #e7d4be;
   border-radius: var(--radius-card);
   color: var(--color-pebble);
 }
@@ -2915,7 +2922,7 @@ a.card:focus-visible,
   align-items: center;
   height: 36px;
   padding: 0 16px;
-  border: 1px solid #d4cfca;
+  border: 1px solid #e7d4be;
   border-radius: var(--radius-pill);
   font-size: 14px;
   transition:
@@ -3306,7 +3313,7 @@ a.card:focus-visible,
   align-items: center;
   justify-content: center;
   height: 44px;
-  border: 1px solid #d4cfca;
+  border: 1px solid #e7d4be;
   border-radius: var(--radius-pill);
   background: var(--color-paper);
   font-weight: 500;
@@ -3331,7 +3338,7 @@ a.card:focus-visible,
   padding: clamp(20px, 3vw, 32px);
   border: 1px solid var(--color-stone);
   border-radius: var(--radius-card);
-  background: #fff;
+  background: #fffcf8;
 }
 
 .result-card__label {
@@ -3370,7 +3377,7 @@ a.card:focus-visible,
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .result-card dd {
@@ -3384,7 +3391,7 @@ a.card:focus-visible,
 .result-card__hint {
   margin: 16px 0 0;
   font-size: 14px;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .swatch {
@@ -3399,7 +3406,7 @@ a.card:focus-visible,
   padding: 20px 20px 14px;
   border: 1px solid var(--color-stone);
   border-radius: var(--radius-card);
-  background: #fcfcfc;
+  background: #fffcf8;
 }
 
 .chart-legend {
@@ -3410,7 +3417,7 @@ a.card:focus-visible,
   padding: 0;
   list-style: none;
   font-size: 14px;
-  color: #4a4643;
+  color: #4b5a56;
 }
 
 .chart-legend li {
@@ -3453,10 +3460,10 @@ a.card:focus-visible,
   transform: translateX(-50%);
   border: 1px solid var(--color-stone);
   border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(45, 42, 40, 0.14);
+  background: #fffcf8;
+  box-shadow: 0 8px 24px rgba(30, 63, 57, 0.14);
   font-size: 13px;
-  color: #4a4643;
+  color: #4b5a56;
   pointer-events: none;
 }
 
@@ -3523,7 +3530,7 @@ a.card:focus-visible,
 .chart-table thead th {
   position: sticky;
   top: 0;
-  background: #fcfcfc;
+  background: #fffcf8;
   font-weight: 500;
 }
 
@@ -3624,7 +3631,7 @@ a.card:focus-visible,
 .newsletter__done {
   margin: 0;
   font-size: 20px;
-  color: #3b3632;
+  color: #2a544c;
 }
 
 @media (max-width: 900px) {
@@ -3663,7 +3670,7 @@ a.card:focus-visible,
   overflow: hidden;
   isolation: isolate;
   border-radius: 20px;
-  color: #fff;
+  color: var(--color-ink);
 }
 
 .auth__art-card {
@@ -3933,12 +3940,12 @@ a.card:focus-visible,
 
 /* ───────────── Admin panel ───────────── */
 
-/* The shadcn tokens with the Planit navy as the primary colour. Set on the root (not .admin) so dialogs,
+/* The shadcn tokens with the site's teal as the primary colour. Set on the root (not .admin) so dialogs,
    sheets and toasts, which render in portals outside the admin wrapper, pick it up too. */
 html:has(.admin) {
-  --primary: #032b66;
-  --primary-foreground: #ffffff;
-  --ring: oklch(0.62 0.09 258);
+  --primary: #1e3f39;
+  --primary-foreground: #fff8f1;
+  --ring: #599288;
 }
 
 @layer base {
