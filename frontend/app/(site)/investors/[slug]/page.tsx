@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getInvestorCategory, INVESTOR_CONTENT } from "@/lib/content/investors";
-import { SERVICE_CONTENT } from "@/lib/content/services";
+import { ALL_PRODUCTS } from "@/lib/content/services";
 import { getSiteSettings } from "@/lib/site-data";
 import { CheckList, CtaBand, Note, PageHero, Section } from "../../../components/site/page-kit";
 
@@ -24,12 +24,16 @@ export default async function InvestorCategoryPage({ params }: Props) {
   const category = getInvestorCategory((await params).slug);
   if (!category) notFound();
   const settings = await getSiteSettings();
-  const services = SERVICE_CONTENT.filter((s) => category.relatedServices.includes(s.slug));
+  const services = ALL_PRODUCTS.filter((s) => category.relatedServices.includes(s.slug));
 
   return (
     <main id="main">
       <PageHero
-        crumbs={[{ label: "Investor Category", href: "" }, { label: category.title, href: "" }]}
+        crumbs={[
+          { label: "Invest", href: "" },
+          { label: "Investor Category", href: "" },
+          { label: category.title, href: "" },
+        ]}
         title={category.headline}
         intro={`For ${category.title.toLowerCase()}`}
       />
@@ -52,7 +56,7 @@ export default async function InvestorCategoryPage({ params }: Props) {
       <Section title="Services that fit">
         <div className="card-grid">
           {services.map((service) => (
-            <Link key={service.slug} className="card" href={`/services/${service.slug}`}>
+            <Link key={service.slug} className="card" href={service.href}>
               <h3>{service.title}</h3>
               <p>{service.summary}</p>
               <span className="card__more">Learn more →</span>

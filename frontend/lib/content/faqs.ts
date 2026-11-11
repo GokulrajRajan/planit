@@ -75,7 +75,7 @@ export const FAQ_GROUPS: { title: string; faqs: (Faq & { home?: boolean })[] }[]
       },
       {
         q: "How do I raise a complaint?",
-        a: "Contact us first, and we will try to resolve it quickly. If you are not satisfied, you can escalate it through SEBI's SCORES portal and the SMART ODR platform. Our Investor Help Desk explains each step.",
+        a: "Contact us first, and we will try to resolve it quickly. If you are not satisfied, you can escalate it through SEBI's SCORES portal. For folio service requests, you can also contact the fund's registrar, such as KFintech. Our Investor Help Desk explains each step.",
       },
     ],
   },

@@ -6,7 +6,7 @@ export type InvestorContent = {
   headline: string;
   intro: string[];
   points: string[];
-  /** Slugs from lib/content/services.ts. */
+  /** Product or category slugs from lib/content/services.ts. */
   relatedServices: string[];
   note?: string;
 };
@@ -42,7 +42,7 @@ export const INVESTOR_CONTENT: InvestorContent[] = [
       "Plans for a home, your children's education and retirement",
       "Making sense of EPF, NPS and other employer benefits alongside mutual funds",
     ],
-    relatedServices: ["sip-planning", "tax-saving-investments", "retirement-planning"],
+    relatedServices: ["sip-planning", "tax-planning", "retirement-planning"],
   },
   {
     slug: "professionals",

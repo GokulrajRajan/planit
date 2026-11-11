@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   compound,
-  elssTaxSaving,
+  emi,
   formatINR,
   formatINRShort,
   goalPlan,
   growingAnnuityDue,
+  loanPlan,
   lumpsumSchedule,
   niceTicks,
   retirementPlan,
   sipForTarget,
   sipFutureValue,
   sipSchedule,
-  yearlySchedule,
 } from "./calculators";
 
 describe("SIP", () => {
@@ -123,19 +123,30 @@ describe("Retirement", () => {
   });
 });
 
-describe("ELSS tax saving", () => {
-  it("applies the slab plus 4% cess, capped at the deduction limit", () => {
-    expect(elssTaxSaving(150_000, 30).taxSaved).toBeCloseTo(46_800, 6);
-    expect(elssTaxSaving(200_000, 30)).toEqual({ eligible: 150_000, taxSaved: expect.closeTo(46_800, 6) });
-    expect(elssTaxSaving(100_000, 20).taxSaved).toBeCloseTo(20_800, 6);
-    expect(elssTaxSaving(150_000, 5).taxSaved).toBeCloseTo(7_800, 6);
-    expect(elssTaxSaving(-5, 30).taxSaved).toBe(0);
+describe("EMI", () => {
+  it("matches the standard reducing-balance formula", () => {
+    // ₹10 lakh at 10% a year for 20 years: the widely quoted EMI of ₹9,650.22.
+    expect(emi(1_000_000, 10, 240)).toBeCloseTo(9_650.22, 2);
+    expect(emi(120_000, 0, 12)).toBe(10_000);
+    expect(emi(0, 10, 12)).toBe(0);
+    expect(emi(100_000, 10, 0)).toBe(0);
   });
 
-  it("grows a yearly investment made at the start of each year", () => {
-    const rows = yearlySchedule({ yearly: 100_000, annualReturn: 10, years: 2 });
-    expect(rows[0]).toEqual({ year: 1, invested: 100_000, value: expect.closeTo(110_000, 6) });
-    expect(rows[1]).toEqual({ year: 2, invested: 200_000, value: expect.closeTo(231_000, 6) });
+  it("repays the whole loan by the last instalment", () => {
+    const plan = loanPlan({ principal: 1_000_000, annualRate: 9.5, years: 7 });
+    expect(plan.schedule).toHaveLength(7);
+    expect(plan.schedule.at(-1)!.balance).toBeCloseTo(0, 4);
+    const repaid = plan.schedule.reduce((sum, row) => sum + row.principal, 0);
+    const interest = plan.schedule.reduce((sum, row) => sum + row.interest, 0);
+    expect(repaid).toBeCloseTo(1_000_000, 4);
+    expect(interest).toBeCloseTo(plan.totalInterest, 4);
+    expect(plan.totalPayment).toBeCloseTo(plan.emi * 84, 6);
+  });
+
+  it("pays more interest early in the loan and more principal later", () => {
+    const { schedule } = loanPlan({ principal: 500_000, annualRate: 12, years: 5 });
+    expect(schedule[0].interest).toBeGreaterThan(schedule[4].interest);
+    expect(schedule[0].principal).toBeLessThan(schedule[4].principal);
   });
 });
 

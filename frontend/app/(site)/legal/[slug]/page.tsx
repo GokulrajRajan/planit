@@ -121,20 +121,20 @@ function GrievanceDetails({ settings }: { settings: SiteSettings }) {
             Contact us first through our <Link href={ROUTES.contact}>contact page</Link>
             {settings.visible_sections.grievance_officer && " or write to our Grievance Officer"}.
           </li>
-          <li>If the issue concerns a scheme or transaction, you may also write to the fund house.</li>
+          <li>
+            If the issue concerns a scheme or transaction, you may also write to the fund house or its registrar, such
+            as{" "}
+            <a href={OFFICIAL_LINKS.kfintech.href} target="_blank" rel="noopener noreferrer">
+              KFintech
+            </a>
+            .
+          </li>
           <li>
             If your complaint is not resolved, lodge it on SEBI&rsquo;s{" "}
             <a href={OFFICIAL_LINKS.scores.href} target="_blank" rel="noopener noreferrer">
               SCORES
             </a>{" "}
             portal.
-          </li>
-          <li>
-            If you are still not satisfied, you can seek online conciliation and arbitration through{" "}
-            <a href={OFFICIAL_LINKS.smartOdr.href} target="_blank" rel="noopener noreferrer">
-              SMART ODR
-            </a>
-            .
           </li>
         </ol>
       </div>

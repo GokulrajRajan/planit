@@ -38,13 +38,13 @@ export default async function Home() {
 
         <HomeBanner banner={banners[0]} />
 
-        <WordStack words={["Invest", "Plan", "Save", "Retire", "Grow"]} />
+        <WordStack words={["Plan", "Invest", "Grow", "Retire"]} />
 
         <FeaturePanel
           id="mutual-funds"
           product="Mutual Funds"
           title="Choose funds that fit your goals, your timeline and your comfort with risk"
-          href="/services/mutual-funds"
+          href="/mutual-funds"
           textTone="dark"
           background="radial-gradient(75% 95% at 78% 55%, #fffaf4 0%, #fcefe1 40%, #f8e2cb 75%, #f4d8ba 100%)"
           visual={<PhoneMockup />}
@@ -55,7 +55,7 @@ export default async function Home() {
           id="sip-planning"
           product="SIP Planning"
           title="Invest a fixed amount every month and let the habit do the heavy lifting"
-          href="/services/sip-planning"
+          href="/mutual-funds/sip-planning"
           textTone="dark"
           background="radial-gradient(45% 42% at 94% 100%, #fffaf4 0%, rgba(255, 250, 244, 0) 70%), radial-gradient(60% 40% at 45% 0%, rgba(249, 180, 94, 0.22), rgba(249, 180, 94, 0) 70%), linear-gradient(90deg, #fff6ec 0%, #fcecdc 44%, #f8e1ca 74%, #f5d9bd 100%)"
           bleed={<ProCard />}
@@ -68,7 +68,7 @@ export default async function Home() {
           id="goal-planning"
           product="Goal Planning"
           title="A home, an education, a dream holiday. Build every goal, block by block."
-          href="/services/goal-planning"
+          href="/mutual-funds/goal-planning"
           textTone="dark"
           bleed={<GeoBlocks />}
         />
@@ -77,7 +77,7 @@ export default async function Home() {
           id="retirement-planning"
           product="Retirement Planning"
           title="Your summit is retirement. Start the climb early, and plan the way down too."
-          href="/services/retirement-planning"
+          href="/mutual-funds/retirement-planning"
           textTone="dark"
           background="linear-gradient(180deg, #cdbba6 0%, #dac9b5 10%, #e6d7c4 20%, #efe0ce 30%, #f6e6d3 40%, #fae8d6 50%, #fde8d4 60%, #fee6d0 70%, #ffe3cc 80%, #ffdfc6 90%, #ffdcc0 100%)"
           bleed={<Mountain />}
@@ -88,7 +88,7 @@ export default async function Home() {
           id="tax-saving"
           product="Tax Saving Investments"
           title="Save tax with ELSS funds, and understand the lock-in before you invest."
-          href="/services/tax-saving-investments"
+          href="/mutual-funds/tax-planning"
           textTone="dark"
           background="var(--color-cream)"
           visual={<Pie />}

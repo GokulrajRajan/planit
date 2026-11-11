@@ -187,30 +187,44 @@ export function retirementPlan({
   };
 }
 
-/**
- * Old tax regime only (ELSS gives no deduction under the new regime). These are the limits in force
- * when this was written: check them against each year's Budget.
- */
-export const ELSS_DEDUCTION_LIMIT = 150_000;
-export const HEALTH_AND_EDUCATION_CESS = 0.04;
-export const OLD_REGIME_SLABS = [5, 20, 30] as const;
+/* ───────────── Loans ───────────── */
 
-/** Tax saved in one year by investing `annualInvestment` in ELSS at the given marginal slab (plus cess). */
-export function elssTaxSaving(annualInvestment: number, slabPercent: number): { eligible: number; taxSaved: number } {
-  const eligible = Math.min(Math.max(annualInvestment, 0), ELSS_DEDUCTION_LIMIT);
-  return { eligible, taxSaved: eligible * (slabPercent / 100) * (1 + HEALTH_AND_EDUCATION_CESS) };
+/** Monthly instalment on a reducing-balance loan: P × i × (1 + i)^n / ((1 + i)^n − 1). */
+export function emi(principal: number, annualRate: number, months: number): number {
+  if (principal <= 0 || months <= 0) return 0;
+  const i = monthlyRate(annualRate);
+  if (i === 0) return principal / months;
+  const growth = (1 + i) ** months;
+  return (principal * i * growth) / (growth - 1);
 }
 
-/** The same amount invested at the start of every year. */
-export function yearlySchedule({ yearly, annualReturn, years }: { yearly: number; annualReturn: number; years: number }): YearRow[] {
-  const r = yearlyRate(annualReturn);
-  const rows: YearRow[] = [];
-  let value = 0;
-  for (let year = 1; year <= years; year++) {
-    value = (value + yearly) * (1 + r);
-    rows.push({ year, invested: yearly * year, value });
+/** One row per year of the loan: principal and interest repaid that year, and the balance left at its end. */
+export type LoanYearRow = { year: number; principal: number; interest: number; balance: number };
+
+export type LoanPlan = { emi: number; totalInterest: number; totalPayment: number; schedule: LoanYearRow[] };
+
+/** EMI, totals and a yearly repayment schedule, with interest charged monthly on the reducing balance. */
+export function loanPlan({ principal, annualRate, years }: { principal: number; annualRate: number; years: number }): LoanPlan {
+  const months = Math.max(0, Math.round(years * 12));
+  const instalment = emi(principal, annualRate, months);
+  const i = monthlyRate(annualRate);
+  const schedule: LoanYearRow[] = [];
+  let balance = principal;
+  let yearPrincipal = 0;
+  let yearInterest = 0;
+  for (let month = 1; month <= months; month++) {
+    const interest = balance * i;
+    balance -= instalment - interest;
+    yearPrincipal += instalment - interest;
+    yearInterest += interest;
+    if (month % 12 === 0 || month === months) {
+      schedule.push({ year: Math.ceil(month / 12), principal: yearPrincipal, interest: yearInterest, balance: Math.max(0, balance) });
+      yearPrincipal = 0;
+      yearInterest = 0;
+    }
   }
-  return rows;
+  const totalPayment = instalment * months;
+  return { emi: instalment, totalInterest: Math.max(0, totalPayment - principal), totalPayment, schedule };
 }
 
 /* ───────────── Formatting ───────────── */

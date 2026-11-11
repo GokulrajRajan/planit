@@ -4,8 +4,15 @@ import { CtaBand, PageHero, Section } from "../../../components/site/page-kit";
 
 export const metadata: Metadata = {
   title: "Mission and Values",
-  description: "Our mission is to help every investor we work with start early, invest with a plan and understand what they own.",
+  description:
+    "Our vision is to become a preferred financial products distribution partner by making a diverse range of financial solutions accessible to more individuals and families.",
 };
+
+const VISION =
+  "To become a preferred financial products distribution partner by making a diverse range of financial solutions accessible to more individuals and families.";
+
+const MISSION =
+  "To expand access to financial products, deliver a dependable client experience, and build lasting relationships through transparency, service excellence, and a commitment to responsible distribution practices.";
 
 const VALUES = [
   {
@@ -37,11 +44,23 @@ export default async function MissionPage() {
     <main id="main">
       <PageHero
         crumbs={[{ label: "About Us", href: "" }, { label: "Mission and Values", href: "" }]}
-        title="Our mission"
-        intro="To help every investor we work with start early, invest with a plan and understand what they own."
+        title="Our vision and mission"
       />
 
-      <Section tone="paper" title="What we value">
+      <Section tone="paper">
+        <div className="two-col">
+          <div className="prose">
+            <h2 className="section-title section-title--small">Our Vision</h2>
+            <p>{VISION}</p>
+          </div>
+          <div className="prose">
+            <h2 className="section-title section-title--small">Our Mission</h2>
+            <p>{MISSION}</p>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="What we value">
         <div className="card-grid">
           {VALUES.map((value) => (
             <div key={value.title} className="card">

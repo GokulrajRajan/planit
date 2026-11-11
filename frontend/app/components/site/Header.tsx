@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ROUTES, type NavGroup } from "@/lib/site";
+import { navContains, ROUTES, type NavGroup } from "@/lib/site";
 import type { Announcement } from "@/lib/site-data";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { Logo } from "./Logo";
@@ -31,8 +31,14 @@ function StripLink({ href, children }: { href: string; children: React.ReactNode
   );
 }
 
+const ChevronRight = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+    <path d="M9 6l6 6-6 6" />
+  </svg>
+);
+
 const groupId = (group: NavGroup) => group.label.toLowerCase().replace(/\s+/g, "-");
-const isInGroup = (group: NavGroup, pathname: string) => group.links.some((link) => link.href === pathname);
+const isInGroup = (group: NavGroup, pathname: string) => navContains(group.links, pathname);
 
 export function SiteHeader({
   nav,
@@ -145,14 +151,44 @@ export function SiteHeader({
                     <div id={`nav-${groupId(group)}`} className="header__dropdown" hidden={!open}>
                       <ul>
                         {group.links.map((link) => (
-                          <li key={link.href}>
-                            <Link
-                              href={link.href}
-                              aria-current={link.href === pathname ? "page" : undefined}
-                              onClick={() => setDropdown(null)}
-                            >
-                              {link.label}
-                            </Link>
+                          // A link with sub-links opens a fly-out on hover or keyboard focus (CSS only).
+                          <li key={link.href || link.label} className={link.links ? "header__has-sub" : undefined}>
+                            {link.href ? (
+                              <Link
+                                href={link.href}
+                                aria-current={link.href === pathname ? "page" : undefined}
+                                data-active={(link.links && navContains(link.links, pathname)) || undefined}
+                                onClick={() => setDropdown(null)}
+                              >
+                                {link.label}
+                                {link.links && <ChevronRight />}
+                              </Link>
+                            ) : (
+                              // A heading with no page of its own: focusable, so keyboard users can open its fly-out.
+                              <button
+                                type="button"
+                                className="header__sub-label"
+                                data-active={(link.links && navContains(link.links, pathname)) || undefined}
+                              >
+                                {link.label}
+                                <ChevronRight />
+                              </button>
+                            )}
+                            {link.links && (
+                              <ul className="header__sub" aria-label={link.label}>
+                                {link.links.map((sub) => (
+                                  <li key={sub.href}>
+                                    <Link
+                                      href={sub.href}
+                                      aria-current={sub.href === pathname ? "page" : undefined}
+                                      onClick={() => setDropdown(null)}
+                                    >
+                                      {sub.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -198,14 +234,33 @@ export function SiteHeader({
               </summary>
               <ul>
                 {group.links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      aria-current={link.href === pathname ? "page" : undefined}
-                      onClick={() => setMenuOpenedOn(null)}
-                    >
-                      {link.label}
-                    </Link>
+                  <li key={link.href || link.label}>
+                    {link.href ? (
+                      <Link
+                        href={link.href}
+                        aria-current={link.href === pathname ? "page" : undefined}
+                        onClick={() => setMenuOpenedOn(null)}
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <span className="header__group-label">{link.label}</span>
+                    )}
+                    {link.links && (
+                      <ul className="header__group-sub">
+                        {link.links.map((sub) => (
+                          <li key={sub.href}>
+                            <Link
+                              href={sub.href}
+                              aria-current={sub.href === pathname ? "page" : undefined}
+                              onClick={() => setMenuOpenedOn(null)}
+                            >
+                              {sub.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -8,7 +8,7 @@ import { CheckList, PageHero, Section } from "../../components/site/page-kit";
 
 export const metadata: Metadata = {
   title: "Investor Help Desk",
-  description: "Help with KYC, nominations, unclaimed investments and complaints, including SCORES and SMART ODR.",
+  description: "Help with KYC, nominations, unclaimed investments and complaints, including SCORES and the fund registrars.",
 };
 
 const External = ({ name }: { name: keyof typeof OFFICIAL_LINKS }) => (
@@ -108,20 +108,16 @@ export default async function HelpDeskPage() {
             </p>
           </li>
           <li>
-            <h3>Write to the fund house</h3>
-            <p>If the issue is with a scheme or a transaction, you can also contact the fund house directly.</p>
+            <h3>Write to the fund house or registrar</h3>
+            <p>
+              If the issue is with a scheme or a transaction, you can also contact the fund house directly, or its
+              registrar, such as <External name="kfintech" />.
+            </p>
           </li>
           <li>
             <h3>SEBI SCORES</h3>
             <p>
               If your complaint isn&rsquo;t resolved, lodge it on SEBI&rsquo;s complaints portal, <External name="scores" />.
-            </p>
-          </li>
-          <li>
-            <h3>SMART ODR</h3>
-            <p>
-              If you are still not satisfied, you can start online conciliation and arbitration through{" "}
-              <External name="smartOdr" />.
             </p>
           </li>
         </ol>

@@ -6,7 +6,7 @@ import { CtaBand, Note, PageHero, Section } from "../../components/site/page-kit
 
 export const metadata: Metadata = {
   title: "Calculators",
-  description: "SIP, lumpsum, retirement, goal and tax-saving calculators. Illustrative estimates to help you plan.",
+  description: "SIP, lumpsum, retirement, goal and EMI calculators. Illustrative estimates to help you plan.",
 };
 
 export default async function CalculatorsPage() {
@@ -30,9 +30,10 @@ export default async function CalculatorsPage() {
           ))}
         </div>
         <Note>
-          Results are illustrative only and are not a guarantee of returns. They assume a constant rate of return,
-          which real investments do not deliver. Mutual Fund investments are subject to market risks, read all scheme
-          related documents carefully.
+          Results are illustrative only and are not a guarantee of returns. The investment calculators assume a
+          constant rate of return, which real investments do not deliver, and the EMI calculator assumes a fixed
+          interest rate. Mutual Fund investments are subject to market risks, read all scheme related documents
+          carefully.
         </Note>
       </Section>
       <CtaBand cta={settings.cta} />

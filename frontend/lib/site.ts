@@ -3,22 +3,42 @@
  * added in a later phase only needs to exist at the path listed below.
  */
 
-export type NavLink = { label: string; href: string };
+import { CALCULATORS } from "./content/calculators";
+import { INVESTOR_CONTENT } from "./content/investors";
+import { ALL_PRODUCTS, categoryHref, PRODUCT_CATEGORIES, productHref, type ProductCategory } from "./content/services";
+
+/**
+ * `links` makes a fly-out sub-menu (Services → Mutual Funds → SIP Planning, …). An empty `href` means the
+ * item is only a heading for its fly-out, not a page.
+ */
+export type NavLink = { label: string; href: string; links?: NavLink[] };
 export type NavGroup = { label: string; links: NavLink[] };
 
-/** Services, in menu order. `enquiryValue` matches ENQUIRY_SERVICES in backend/app/models/enquiry.py. */
-export const SERVICES = [
-  { label: "Mutual Funds", href: "/services/mutual-funds", enquiryValue: "mutual_funds" },
-  { label: "SIP Planning", href: "/services/sip-planning", enquiryValue: "sip_planning" },
-  { label: "Goal Planning", href: "/services/goal-planning", enquiryValue: "goal_planning" },
-  { label: "Retirement Planning", href: "/services/retirement-planning", enquiryValue: "retirement_planning" },
-  { label: "Tax Saving Investments", href: "/services/tax-saving-investments", enquiryValue: "tax_saving" },
-  { label: "Insurance Review", href: "/services/insurance-review", enquiryValue: "insurance_review" },
-] as const;
-
+/** Every product with an enquiry value, in menu order. Values match ENQUIRY_SERVICES in backend/app/models/enquiry.py. */
 export const ENQUIRY_SERVICE_OPTIONS = [
-  ...SERVICES.map(({ label, enquiryValue }) => ({ label, value: enquiryValue })),
+  ...ALL_PRODUCTS.flatMap(({ title, enquiryValue }) => (enquiryValue ? [{ label: title, value: enquiryValue }] : [])),
   { label: "Something else", value: "other" },
+];
+
+const productLinks = (category: ProductCategory): NavLink[] =>
+  category.pages.map((page) => ({ label: page.menuLabel ?? page.title, href: productHref(category, page) }));
+
+/** Services menu: each product category opens a sub-menu of its pages. */
+const SERVICES_MENU: NavLink[] = PRODUCT_CATEGORIES.filter((category) => !category.ownTab).map((category) => ({
+  label: category.menuLabel ?? category.title,
+  href: categoryHref(category),
+  links: productLinks(category),
+}));
+
+/** Invest tab: Bonds and Unlisted Shares, plus the investor groups in a fly-out. */
+const INVEST = PRODUCT_CATEGORIES.find((category) => category.ownTab)!;
+const INVEST_MENU: NavLink[] = [
+  ...productLinks(INVEST),
+  {
+    label: "Investor Category",
+    href: "",
+    links: INVESTOR_CONTENT.map(({ slug, title }) => ({ label: title, href: `/investors/${slug}` })),
+  },
 ];
 
 export const ROUTES = {
@@ -35,28 +55,21 @@ export const ROUTES = {
   commissionDisclosures: "/legal/commission-disclosures",
 } as const;
 
-/** Header dropdowns, in menu order. "Investor Category", "About Us" and "Knowledge Center" are headings, not pages. */
+/** Header dropdowns, in menu order. The tab labels are headings, not pages. */
 export const HEADER_NAV: NavGroup[] = [
   {
     label: "Services",
-    links: [{ label: "Overview", href: "/services" }, ...SERVICES.map(({ label, href }) => ({ label, href }))],
+    links: [{ label: "Overview", href: "/services" }, ...SERVICES_MENU],
   },
   {
-    label: "Investor Category",
-    links: [
-      { label: "Students", href: "/investors/students" },
-      { label: "Salaried Individuals", href: "/investors/salaried" },
-      { label: "Professionals", href: "/investors/professionals" },
-      { label: "Corporates and SMEs", href: "/investors/corporates-and-smes" },
-      { label: "NRIs", href: "/investors/nri" },
-    ],
+    label: INVEST.title,
+    links: INVEST_MENU,
   },
   {
     label: "About Us",
     links: [
       { label: "About Planit", href: "/about" },
       { label: "Mission and Values", href: "/about/mission-and-values" },
-      { label: "Our Team", href: "/about/team" },
     ],
   },
   {
@@ -70,16 +83,13 @@ export const HEADER_NAV: NavGroup[] = [
   },
   {
     label: "Calculators",
-    links: [
-      { label: "All calculators", href: ROUTES.calculators },
-      { label: "SIP Calculator", href: "/calculators/sip" },
-      { label: "Lumpsum Calculator", href: "/calculators/lumpsum" },
-      { label: "Retirement Calculator", href: "/calculators/retirement" },
-      { label: "Goal Calculator", href: "/calculators/goal" },
-      { label: "Tax Saving Calculator", href: "/calculators/tax-saving" },
-    ],
+    links: CALCULATORS.map(({ slug, title }) => ({ label: title, href: `${ROUTES.calculators}/${slug}` })),
   },
 ];
+
+/** True when `pathname` is one of the links, or one of their sub-menu links. */
+export const navContains = (links: NavLink[], pathname: string): boolean =>
+  links.some((link) => link.href === pathname || navContains(link.links ?? [], pathname));
 
 /** The header menu, minus links to sections that are hidden (switched off or still without content). */
 export function headerNav({ marketUpdate }: { marketUpdate: boolean }): NavGroup[] {

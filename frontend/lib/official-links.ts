@@ -15,11 +15,6 @@ export const OFFICIAL_LINKS = {
     label: "SEBI Complaints Redress System",
     href: "https://scores.sebi.gov.in",
   },
-  smartOdr: {
-    name: "SMART ODR",
-    label: "Online Dispute Resolution portal for the securities market",
-    href: "https://smartodr.in",
-  },
   amfi: {
     name: "AMFI",
     label: "Association of Mutual Funds in India",
@@ -39,6 +34,11 @@ export const OFFICIAL_LINKS = {
     name: "MF Central",
     label: "Investor service platform run by the mutual fund registrars (KYC status, folios, service requests)",
     href: "https://www.mfcentral.com",
+  },
+  kfintech: {
+    name: "KFintech",
+    label: "KFin Technologies, registrar and transfer agent for many mutual funds (folio services and requests)",
+    href: "https://www.kfintech.com",
   },
 } as const;
 

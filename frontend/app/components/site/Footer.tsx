@@ -119,9 +119,9 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
             <Link href={ROUTES.commissionDisclosures}>Commission Disclosures</Link>.
           </p>
           <p>
-            Complaints not resolved by us can be raised on <OfficialLink name="scores" /> and{" "}
-            <OfficialLink name="smartOdr" />. See our <Link href="/legal/grievance-redressal">Grievance Redressal</Link>{" "}
-            policy.
+            Complaints not resolved by us can be raised on <OfficialLink name="scores" />. For folio service requests,
+            you can also contact your fund&rsquo;s registrar, such as <OfficialLink name="kfintech" />. See our{" "}
+            <Link href="/legal/grievance-redressal">Grievance Redressal</Link> policy.
           </p>
         </div>
 
