@@ -121,10 +121,11 @@ export default async function HelpDeskPage() {
             </p>
           </li>
         </ol>
+        {/* HIDDEN_INVESTOR_INFO:
         <p className="section-link">
           Read our <Link href="/legal/grievance-redressal">Grievance Redressal policy</Link> and the{" "}
           <Link href="/legal/investor-charter">Investor Charter</Link>.
-        </p>
+        </p> */}
       </Section>
     </main>
   );

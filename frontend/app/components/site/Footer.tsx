@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { Fragment } from "react";
-import { CLIENT_ARN, REGISTRATIONS } from "@/lib/client-info";
+import { CLIENT_ARN, phoneLinks, REGISTRATIONS } from "@/lib/client-info";
 import { OFFICIAL_LINKS } from "@/lib/official-links";
 import { FOOTER_QUICK_LINKS, LEGAL_NAV, MF_RISK_WARNING /* HIDDEN_LEGAL: , ROUTES */ } from "@/lib/site";
 import type { SiteSettings } from "@/lib/site-data";
 import { Logo } from "./Logo";
-import { PhoneLinks } from "./PhoneLinks";
 import { SocialLinks } from "./SocialLinks";
 
 const formatDate = (iso: string) =>
@@ -25,21 +23,15 @@ function OfficialLink({ name }: { name: keyof typeof OFFICIAL_LINKS }) {
   );
 }
 
-/** "Name | Registration | Number": each part stays in one piece when the line wraps. */
-function RegistrationLine({ items }: { items: (string | null | false)[] }) {
-  const parts = items.filter(Boolean);
+/** A label over its number, in the row of registration numbers. */
+function Registration({ label, lines }: { label: string; lines: (string | null | false)[] }) {
   return (
-    <p className="footer__registration">
-      {parts.map((part, i) => (
-        // The bar stays with the part before it, so no line starts with one.
-        <Fragment key={i}>
-          <span className="whitespace-nowrap">
-            {part}
-            {i < parts.length - 1 && " |"}
-          </span>{" "}
-        </Fragment>
+    <div>
+      <dt>{label}</dt>
+      {lines.filter(Boolean).map((line) => (
+        <dd key={String(line)}>{line}</dd>
       ))}
-    </p>
+    </div>
   );
 }
 
@@ -50,10 +42,9 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
   // The client's ARN is in a person's name; a different ARN saved in the admin panel is taken to be the firm's.
   const arnHolder = registration.arn === CLIENT_ARN ? REGISTRATIONS.arnHolder : firmName;
   const cityLine = [office.city, office.state].filter(Boolean).join(", ");
-  const street = [office.address_line1, office.address_line2].filter(Boolean).join(", ");
   const cityAndPin = [cityLine, office.pincode].filter(Boolean).join(" - ");
-  const hasAddress = Boolean(street || cityAndPin);
-  const hasContact = Boolean(hasAddress || office.phone || office.email || office.hours);
+  const addressLines = [office.address_line1, [office.address_line2, cityAndPin].filter(Boolean).join(", ")].filter(Boolean);
+  const hasContact = Boolean(addressLines.length || office.phone || office.email || office.hours);
 
   return (
     <footer className="footer">
@@ -62,27 +53,35 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
           <div className="footer__brand">
             <Logo logoUrl={logoUrl} />
             <p>Mutual fund distribution for individuals, families and businesses.</p>
-            {hasContact && (
-              <address className="footer__contact">
-                {hasAddress && (
-                  <span>
-                    {street && cityAndPin ? `${street}, ` : street}
-                    <span className="whitespace-nowrap">{cityAndPin}</span>
-                  </span>
-                )}
-                {office.phone && (
-                  <span>
-                    <PhoneLinks phone={office.phone} />
-                  </span>
-                )}
-                {office.email && <a href={`mailto:${office.email}`}>{office.email}</a>}
-                {office.hours && <span>{office.hours}</span>}
-              </address>
-            )}
             {visible.social_links && <SocialLinks links={settings.social_links} />}
           </div>
 
-          <nav aria-label="Quick links">
+          {hasContact && (
+            <div>
+              <h4>Contact us</h4>
+              <address className="footer__contact">
+                {addressLines.length > 0 && (
+                  <span>
+                    {addressLines.map((line, i) => (
+                      <span key={line} className="block">
+                        {line}
+                        {i < addressLines.length - 1 && ","}
+                      </span>
+                    ))}
+                  </span>
+                )}
+                {phoneLinks(office.phone ?? "").map((phone) => (
+                  <a key={phone.href} href={phone.href}>
+                    {phone.label}
+                  </a>
+                ))}
+                {office.email && <a href={`mailto:${office.email}`}>{office.email}</a>}
+                {office.hours && <span>{office.hours}</span>}
+              </address>
+            </div>
+          )}
+
+          <nav className="footer__links" aria-label="Quick links">
             <h4>Quick links</h4>
             <ul>
               {FOOTER_QUICK_LINKS.map((link) => (
@@ -121,28 +120,25 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
           ))}
         </div>
 
+        {visible.registration_details && (
+          <dl className="footer__registrations">
+            <Registration
+              label="AMFI-registered Mutual Fund Distributor"
+              lines={[
+                `${arnHolder} | ${registration.arn}`,
+                registration.arn_valid_until && `Valid till ${formatDate(registration.arn_valid_until)}`,
+                registration.euin && `EUIN: ${registration.euin}`,
+              ]}
+            />
+            <Registration label="NSE Regn. No." lines={[REGISTRATIONS.nse]} />
+            <Registration label="BSE Regn. No." lines={[REGISTRATIONS.bse]} />
+            <Registration label="GSTIN" lines={[REGISTRATIONS.gstin]} />
+            {registration.cin && <Registration label="CIN" lines={[registration.cin]} />}
+          </dl>
+        )}
+
         <div className="footer__compliance">
-          {visible.registration_details && (
-            <>
-              <RegistrationLine
-                items={[
-                  arnHolder,
-                  "AMFI-registered Mutual Fund Distributor",
-                  `${registration.arn}${registration.arn_valid_until ? ` (valid till ${formatDate(registration.arn_valid_until)})` : ""}`,
-                  registration.euin && `EUIN: ${registration.euin}`,
-                  registration.cin && `CIN: ${registration.cin}`,
-                ]}
-              />
-              <RegistrationLine
-                items={[
-                  firmName,
-                  `NSE Regn. No. ${REGISTRATIONS.nse}`,
-                  `BSE Regn. No. ${REGISTRATIONS.bse}`,
-                  `GSTIN ${REGISTRATIONS.gstin}`,
-                ]}
-              />
-            </>
-          )}
+          <p className="footer__warning">{MF_RISK_WARNING}</p>
           {visible.grievance_officer && (
             <p>
               Grievance Officer: {officer.name}
@@ -156,7 +152,6 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
               {officer.phone && ` · ${officer.phone}`}
             </p>
           )}
-          <p className="footer__warning">{MF_RISK_WARNING}</p>
           <p>
             Past performance is not indicative of future returns. Figures shown on this website are illustrative
             examples, not a promise or guarantee of returns. We earn commission from mutual fund houses on the schemes
@@ -167,8 +162,9 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
           </p>
           <p>
             Complaints not resolved by us can be raised on <OfficialLink name="scores" />. For folio service requests,
-            you can also contact your fund&rsquo;s registrar, such as <OfficialLink name="kfintech" />. See our{" "}
-            <Link href="/legal/grievance-redressal">Grievance Redressal</Link> policy.
+            you can also contact your fund&rsquo;s registrar, such as <OfficialLink name="kfintech" />.
+            {/* HIDDEN_INVESTOR_INFO: See our{" "}
+            <Link href="/legal/grievance-redressal">Grievance Redressal</Link> policy. */}
           </p>
         </div>
 

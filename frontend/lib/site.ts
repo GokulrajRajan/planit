@@ -105,17 +105,18 @@ export const FOOTER_QUICK_LINKS: NavLink[] = [
 
 /** The legal pages shown in the footer, one column per group. */
 export const LEGAL_NAV: NavGroup[] = [
-  {
-    label: "Investor information",
-    links: [
-      { label: "Investor Charter", href: "/legal/investor-charter" },
-      { label: "Rights and Obligations of Investors", href: "/legal/investor-rights-and-obligations" },
-      { label: "Do's and Don'ts", href: "/legal/dos-and-donts" },
-      { label: "Grievance Redressal", href: "/legal/grievance-redressal" },
-      { label: "Client Onboarding and KYC Policy", href: "/legal/client-onboarding-and-kyc-policy" },
-      { label: "Important Links", href: "/legal/important-links" },
-    ],
-  },
+  // HIDDEN_INVESTOR_INFO: hidden at the client's request; uncomment to bring it back.
+  // {
+  //   label: "Investor information",
+  //   links: [
+  //     { label: "Investor Charter", href: "/legal/investor-charter" },
+  //     { label: "Rights and Obligations of Investors", href: "/legal/investor-rights-and-obligations" },
+  //     { label: "Do's and Don'ts", href: "/legal/dos-and-donts" },
+  //     { label: "Grievance Redressal", href: "/legal/grievance-redressal" },
+  //     { label: "Client Onboarding and KYC Policy", href: "/legal/client-onboarding-and-kyc-policy" },
+  //     { label: "Important Links", href: "/legal/important-links" },
+  //   ],
+  // },
   // HIDDEN_LEGAL: footer column hidden at the client's request.
   // {
     // label: "Legal and disclosures",
