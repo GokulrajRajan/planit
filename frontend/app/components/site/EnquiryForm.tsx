@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
+// HIDDEN_LEGAL: import Link from "next/link";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { ENQUIRY_SERVICE_OPTIONS, ROUTES } from "@/lib/site";
+import { ENQUIRY_SERVICE_OPTIONS /* HIDDEN_LEGAL: , ROUTES */ } from "@/lib/site";
 import { applyServerError, Field, FormAlert, SelectField, SubmitButton, TextAreaField } from "../form";
 import { Captcha, CAPTCHA_ENABLED, type CaptchaHandle } from "./Captcha";
 
@@ -133,8 +133,9 @@ export function EnquiryForm({ defaultService = "" }: { defaultService?: string }
       />
 
       <p className="enquiry__note">
-        By sending this form you agree that Planit may contact you about your enquiry. See our{" "}
-        <Link href={ROUTES.privacyPolicy}>Privacy Policy</Link>.
+        By sending this form you agree that Planit may contact you about your enquiry.
+        {/* HIDDEN_LEGAL: See our{" "}
+        <Link href={ROUTES.privacyPolicy}>Privacy Policy</Link>. */}
       </p>
       <SubmitButton pending={isSubmitting} className="enquiry__submit">
         {isSubmitting ? "Sending…" : "Send enquiry"}

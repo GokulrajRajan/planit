@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/site-data";
 import { EnquiryForm } from "../../components/site/EnquiryForm";
 import { PageHero, Section } from "../../components/site/page-kit";
+import { PhoneLinks } from "../../components/site/PhoneLinks";
 import { SocialLinks } from "../../components/site/SocialLinks";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export default async function ContactPage() {
   const settings = await getSiteSettings();
   const { office, visible_sections: visible } = settings;
   const cityLine = [office.city, office.state].filter(Boolean).join(", ");
-  const addressLines = [office.address_line1, office.address_line2, [cityLine, office.pincode].filter(Boolean).join(" ")].filter(
+  const addressLines = [office.address_line1, office.address_line2, [cityLine, office.pincode].filter(Boolean).join(" - ")].filter(
     Boolean,
   );
   const hasDetails = addressLines.length > 0 || office.phone || office.email || office.hours;
@@ -48,7 +49,7 @@ export default async function ContactPage() {
                     <>
                       <dt>Phone</dt>
                       <dd>
-                        <a href={`tel:${office.phone.replace(/[^\d+]/g, "")}`}>{office.phone}</a>
+                        <PhoneLinks phone={office.phone} />
                       </dd>
                     </>
                   )}

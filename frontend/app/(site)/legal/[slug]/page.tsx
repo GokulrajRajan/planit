@@ -142,7 +142,7 @@ function GrievanceDetails({ settings }: { settings: SiteSettings }) {
   );
 }
 
-/** One readable template for all 12 legal pages; their text lives in lib/content/legal.ts. */
+/** One readable template for all the legal pages; their text lives in lib/content/legal.ts. */
 export default async function LegalPage({ params }: Props) {
   const page = getLegalPage((await params).slug);
   if (!page) notFound();

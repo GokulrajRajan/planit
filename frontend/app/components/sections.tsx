@@ -7,7 +7,7 @@ import { Scene } from "./scene";
 import { EnquiryForm } from "./site/EnquiryForm";
 import { NewsletterForm } from "./site/NewsletterForm";
 import { FaqList } from "./site/page-kit";
-import { InkIcon } from "./visuals";
+import { InkIcon, Sea } from "./visuals";
 
 const ArrowIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -88,7 +88,8 @@ export function Manifesto() {
             <Lines text="Investing, made clear" />
           </h2>
           <p className="manifesto__body">
-            <Lines text="Why Planit? Because investing should feel clear, not confusing. We help you choose mutual funds that fit your goals, set up SIPs that suit your budget, and review your plan as life changes. Plain language, regular check-ins, and commissions that are fully disclosed." />
+            <Lines text="Why Planit? Because investing should feel clear, not confusing. We help you choose mutual funds that fit your goals, set up SIPs that suit your budget, and review your plan as life changes. Plain language and regular check-ins." />
+            {/* HIDDEN_LEGAL: the last sentence was: Plain language, regular check-ins, and commissions that are fully disclosed. */}
           </p>
           <p className="manifesto__note" data-block="late">
             Figures shown on this page are illustrative examples. They are not real accounts and not a promise or
@@ -122,28 +123,59 @@ export function HowItWorks({ steps }: { steps: { title: string; body: string }[]
   );
 }
 
-export function WhoWeServe({ groups }: { groups: { title: string; headline: string; href: string }[] }) {
+/** The client's line on market ups and downs, over a calm sea. */
+export function WavesQuote() {
   return (
-    <Scene className="home-section" id="who-we-serve">
-      <div className="container">
-        <Reveal>
-          <h2 className="home-section__title">
-            <Lines text="Who we serve" />
-          </h2>
-          <div className="card-grid">
-            {groups.map((group) => (
-              <Link key={group.href} className="card" href={group.href} data-block="">
-                <h3>{group.title}</h3>
-                <p>{group.headline}</p>
-                <span className="card__more">See how we help →</span>
-              </Link>
-            ))}
-          </div>
-        </Reveal>
-      </div>
+    <Scene className="waves" id="plan-your-journey">
+      <Reveal className="container">
+        <figure className="waves__quote">
+          <blockquote>
+            <p className="waves__title">
+              <span className="waves__line">
+                <Lines text="You Cannot Control the Waves." />
+              </span>{" "}
+              <span className="waves__line">
+                <Lines text="But You Can Plan Your Journey." />
+              </span>
+            </p>
+            <p className="waves__body" data-block="">
+              Markets will rise and fall. Your financial goals deserve a plan that looks beyond the waves.
+            </p>
+          </blockquote>
+          <figcaption className="waves__sign" data-block="late">
+            <strong>PLANIT</strong>
+            <span>Plan. Achieve. Grow.</span>
+          </figcaption>
+        </figure>
+      </Reveal>
+      <Sea />
     </Scene>
   );
 }
+
+// HIDDEN_INVESTORS: its cards link to the Investor Category pages.
+// export function WhoWeServe({ groups }: { groups: { title: string; headline: string; href: string }[] }) {
+//   return (
+//     <Scene className="home-section" id="who-we-serve">
+//       <div className="container">
+//         <Reveal>
+//           <h2 className="home-section__title">
+//             <Lines text="Who we serve" />
+//           </h2>
+//           <div className="card-grid">
+//             {groups.map((group) => (
+//               <Link key={group.href} className="card" href={group.href} data-block="">
+//                 <h3>{group.title}</h3>
+//                 <p>{group.headline}</p>
+//                 <span className="card__more">See how we help →</span>
+//               </Link>
+//             ))}
+//           </div>
+//         </Reveal>
+//       </div>
+//     </Scene>
+//   );
+// }
 
 /** Rendered only once the admin has entered real figures (see visible_sections.stats). */
 export function Stats({ stats }: { stats: { label: string; value: string; note: string | null }[] }) {

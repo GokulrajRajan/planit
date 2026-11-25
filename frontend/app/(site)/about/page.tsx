@@ -80,11 +80,12 @@ export default async function AboutPage() {
             <p>Mutual funds, trading, bonds, unlisted shares, PMS, AIFs and insurance.</p>
             <span className="card__more">Explore →</span>
           </Link>
+          {/* HIDDEN_LEGAL:
           <Link className="card" href="/legal/registration-disclosure">
             <h3>Registration</h3>
             <p>Our registration with the Association of Mutual Funds in India (AMFI).</p>
             <span className="card__more">View details →</span>
-          </Link>
+          </Link> */}
         </div>
       </Section>
 

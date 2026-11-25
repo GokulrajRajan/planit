@@ -15,7 +15,7 @@ import {
   SquarePen,
   User,
 } from "lucide-react";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useRef, useSyncExternalStore } from "react";
 import { pauseClip, playClip, useMotion } from "./motion";
 import { useSceneFrame } from "./scene";
 
@@ -465,6 +465,67 @@ export function Pie() {
 }
 
 /* ───────────── Line-art icon ───────────── */
+
+/* ───────────── Sea (the waves quote) ───────────── */
+
+const SEA_WIDTH = 2880;
+
+/** A wave `count` crests wide, drawn twice side by side so sliding it by half its width loops without a seam. */
+function wavePath(count: number, crest: number) {
+  const half = SEA_WIDTH / 2 / count / 2;
+  let d = `M0 40Q${half / 2} ${40 - crest * 2} ${half} 40`;
+  for (let x = half * 2; x <= SEA_WIDTH; x += half) d += `T${x} 40`;
+  return `${d}V400H0Z`;
+}
+
+// Back to front. top: where the layer starts, from the top of the sea. The last one is the next section's colour.
+const SEA_LAYERS = [
+  { count: 8, crest: 4, top: "-10%", color: "#d2cfb3", dur: 60, reverse: false },
+  { count: 6, crest: 6, top: "6%", color: "#b3c0ad", dur: 48, reverse: true },
+  { count: 5, crest: 9, top: "25%", color: "#8aa79b", dur: 38, reverse: false },
+  { count: 4, crest: 12, top: "47%", color: "#63877c", dur: 32, reverse: true },
+  { count: 3, crest: 10, top: "calc(100% - 62px)", color: "var(--color-paper)", dur: 30, reverse: false },
+];
+
+/** Sunrise over drifting waves; a small boat crosses it as the section scrolls past. */
+export function Sea() {
+  return (
+    <div className="sea" aria-hidden="true">
+      <div className="sea__sun" />
+      {SEA_LAYERS.map((layer, i) => (
+        <Fragment key={i}>
+          {i === 3 && (
+            <div className="sea__boat">
+              <svg viewBox="0 0 100 100">
+                <path d="M50 8V74" stroke="#1e3f39" strokeWidth="2.5" strokeLinecap="round" />
+                <path d="M50 8l14 5-14 5z" fill="#f69322" />
+                <path d="M54 22C74 34 82 50 84 66H54z" fill="#fff8f1" />
+                <path d="M46 28C34 40 26 52 22 66h24z" fill="#fcdcb4" />
+                <path d="M10 74h80l-12 18H24z" fill="#1e3f39" />
+              </svg>
+            </div>
+          )}
+          <div className="sea__layer" style={{ top: layer.top }}>
+            <svg
+              viewBox={`0 0 ${SEA_WIDTH} 400`}
+              preserveAspectRatio="none"
+              style={{ animationDuration: `${layer.dur}s`, animationDirection: layer.reverse ? "reverse" : "normal" }}
+            >
+              <path d={wavePath(layer.count, layer.crest)} fill={layer.color} />
+            </svg>
+          </div>
+          {i === 0 && (
+            <div className="sea__glints">
+              {[0, 1, 2, 3].map((n) => (
+                <span key={n} />
+              ))}
+            </div>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
 
 export function InkIcon({ className }: { className?: string }) {
   return (

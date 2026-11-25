@@ -6,7 +6,7 @@ import { PageHero, Section } from "../../components/site/page-kit";
 
 export const metadata: Metadata = {
   title: "Useful Links",
-  description: "Official investor resources from SEBI, AMFI, the depositories and the mutual fund registrars.",
+  description: "Official investor resources from SEBI, AMFI and the mutual fund registrars.",
 };
 
 const calculators = HEADER_NAV.find((group) => group.label === "Calculators")?.links ?? [];

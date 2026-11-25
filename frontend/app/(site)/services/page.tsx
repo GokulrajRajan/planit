@@ -32,9 +32,11 @@ export default async function ServicesPage() {
               </Link>
             ))}
           </div>
-          <p className="section-link">
-            <Link href={categoryHref(category)}>All about {category.title.toLowerCase()} →</Link>
-          </p>
+          {!category.noLanding && (
+            <p className="section-link">
+              <Link href={categoryHref(category)}>All about {category.title.toLowerCase()} →</Link>
+            </p>
+          )}
         </Section>
       ))}
 

@@ -20,15 +20,10 @@ export const OFFICIAL_LINKS = {
     label: "Association of Mutual Funds in India",
     href: "https://www.amfiindia.com",
   },
-  cdsl: {
-    name: "CDSL",
-    label: "Central Depository Services (India) Limited",
-    href: "https://www.cdslindia.com",
-  },
-  nsdl: {
-    name: "NSDL",
-    label: "National Securities Depository Limited",
-    href: "https://nsdl.co.in",
+  camsEdge360: {
+    name: "CAMS edge360",
+    label: "CAMS platform for mutual fund distributors and advisors",
+    href: "https://edge360.camsonline.com",
   },
   mfCentral: {
     name: "MF Central",

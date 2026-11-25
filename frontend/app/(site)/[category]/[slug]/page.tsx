@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { categoryHref, getProduct, PRODUCT_CATEGORIES, productHref } from "@/lib/content/services";
+import { categoryHref, getProduct, PRODUCT_CATEGORIES, productHref, SERVICE_ENTRIES } from "@/lib/content/services";
 import { getSiteSettings } from "@/lib/site-data";
 import { PageHero } from "../../../components/site/page-kit";
 import { ProductBody } from "../../../components/site/product";
@@ -33,24 +33,31 @@ export default async function ProductPage({ params }: Props) {
     <main id="main">
       <PageHero
         crumbs={[
-          ...(category.ownTab ? [] : [{ label: "Services", href: "/services" }]),
-          { label: category.title, href: categoryHref(category) },
-          { label: page.title, href: "" },
+          { label: "Services", href: "/services" },
+          ...(category.noLanding ? [] : [{ label: category.title, href: categoryHref(category) }]),
+          { label: category.noLanding ? (page.menuLabel ?? page.title) : page.title, href: "" },
         ]}
         title={page.title}
         intro={page.summary}
       />
       <ProductBody
         content={page}
-        related={{
-          title: `More in ${category.title}`,
-          links: [
-            { label: `${category.title} overview`, href: categoryHref(category) },
-            ...category.pages
-              .filter((p) => p.slug !== page.slug)
-              .map((p) => ({ label: p.title, href: productHref(category, p) })),
-          ],
-        }}
+        related={
+          category.noLanding
+            ? {
+                title: "Other services",
+                links: SERVICE_ENTRIES.filter((entry) => entry.href !== productHref(category, page)),
+              }
+            : {
+                title: `More in ${category.title}`,
+                links: [
+                  { label: `${category.title} overview`, href: categoryHref(category) },
+                  ...category.pages
+                    .filter((p) => p.slug !== page.slug)
+                    .map((p) => ({ label: p.title, href: productHref(category, p) })),
+                ],
+              }
+        }
         settings={settings}
       />
     </main>

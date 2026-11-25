@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
       { source: "/services/retirement-planning", destination: "/mutual-funds/retirement-planning", permanent: true },
       { source: "/services/tax-saving-investments", destination: "/mutual-funds/tax-planning", permanent: true },
       { source: "/services/insurance-review", destination: "/protect/insurance-review", permanent: true },
+      // The Invest and Wealth landing pages were removed (their products keep their /invest/… and /wealth/…
+      // URLs). Temporary, because both are in the client's URL list and may come back.
+      { source: "/invest", destination: "/services", permanent: false },
+      { source: "/wealth", destination: "/services", permanent: false },
       // The Tax Saving calculator was removed; its old link lands on the Tax Saving Investments page.
       { source: "/calculators/tax-saving", destination: "/mutual-funds/tax-planning", permanent: true },
     ];

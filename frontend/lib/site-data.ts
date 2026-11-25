@@ -1,4 +1,5 @@
 import type { ApiEnvelope } from "./api";
+import { withClientInfo } from "./client-info";
 
 /** Mirrors backend/app/schemas/settings_schema.py. Every field is empty until the client supplies it. */
 export type SiteSettings = {
@@ -91,7 +92,7 @@ const DEFAULT_OPEN_ACCOUNT_URL = "https://www.motilaloswal.com/open-demat-accoun
 
 /**
  * Used when the API can't be reached (e.g. a deployment without the backend): everything that depends on
- * client data stays hidden, except the MF folio and demat account links, which are known in advance.
+ * client data stays hidden, except the MF folio and demat account links and what lib/client-info.ts fills in.
  */
 const EMPTY_SETTINGS: SiteSettings = {
   branding: { logo_url: null, primary_color: null, accent_color: null },
@@ -136,7 +137,7 @@ async function getData<T>(path: string): Promise<T | null> {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   const data = await getData<{ settings: SiteSettings }>("/settings");
-  return data?.settings ?? EMPTY_SETTINGS;
+  return withClientInfo(data?.settings ?? EMPTY_SETTINGS);
 }
 
 export async function getAnnouncements(placement: Announcement["placement"]): Promise<Announcement[]> {

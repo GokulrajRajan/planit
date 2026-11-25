@@ -4,7 +4,7 @@
  */
 
 import { CALCULATORS } from "./content/calculators";
-import { INVESTOR_CONTENT } from "./content/investors";
+// HIDDEN_INVESTORS: import { INVESTOR_CONTENT } from "./content/investors";
 import { ALL_PRODUCTS, categoryHref, PRODUCT_CATEGORIES, productHref, type ProductCategory } from "./content/services";
 
 /**
@@ -23,23 +23,15 @@ export const ENQUIRY_SERVICE_OPTIONS = [
 const productLinks = (category: ProductCategory): NavLink[] =>
   category.pages.map((page) => ({ label: page.menuLabel ?? page.title, href: productHref(category, page) }));
 
-/** Services menu: each product category opens a sub-menu of its pages. */
-const SERVICES_MENU: NavLink[] = PRODUCT_CATEGORIES.filter((category) => !category.ownTab).map((category) => ({
-  label: category.menuLabel ?? category.title,
-  href: categoryHref(category),
-  links: productLinks(category),
-}));
-
-/** Invest tab: Bonds and Unlisted Shares, plus the investor groups in a fly-out. */
-const INVEST = PRODUCT_CATEGORIES.find((category) => category.ownTab)!;
-const INVEST_MENU: NavLink[] = [
-  ...productLinks(INVEST),
-  {
-    label: "Investor Category",
-    href: "",
-    links: INVESTOR_CONTENT.map(({ slug, title }) => ({ label: title, href: `/investors/${slug}` })),
-  },
-];
+/**
+ * Services menu: each product category opens a sub-menu of its pages. Bonds, Unlisted Shares, PMS and AIF
+ * belong to categories without a landing page, so they are direct links.
+ */
+const SERVICES_MENU: NavLink[] = PRODUCT_CATEGORIES.flatMap((category) =>
+  category.noLanding
+    ? productLinks(category)
+    : [{ label: category.menuLabel ?? category.title, href: categoryHref(category), links: productLinks(category) }],
+);
 
 export const ROUTES = {
   home: "/",
@@ -51,8 +43,9 @@ export const ROUTES = {
   marketUpdate: "/market-update",
   faqs: "/faqs",
   usefulLinks: "/useful-links",
-  privacyPolicy: "/legal/privacy-policy",
-  commissionDisclosures: "/legal/commission-disclosures",
+  // HIDDEN_LEGAL: these pages are commented out in lib/content/legal.ts.
+  // privacyPolicy: "/legal/privacy-policy",
+  // commissionDisclosures: "/legal/commission-disclosures",
 } as const;
 
 /** Header dropdowns, in menu order. The tab labels are headings, not pages. */
@@ -61,10 +54,11 @@ export const HEADER_NAV: NavGroup[] = [
     label: "Services",
     links: [{ label: "Overview", href: "/services" }, ...SERVICES_MENU],
   },
-  {
-    label: INVEST.title,
-    links: INVEST_MENU,
-  },
+  // HIDDEN_INVESTORS:
+  // {
+  //   label: "Investor Category",
+  //   links: INVESTOR_CONTENT.map(({ slug, title }) => ({ label: title, href: `/investors/${slug}` })),
+  // },
   {
     label: "About Us",
     links: [
@@ -109,7 +103,7 @@ export const FOOTER_QUICK_LINKS: NavLink[] = [
   { label: "Contact Us", href: ROUTES.contact },
 ];
 
-/** The 12 legal pages, split into two footer columns. */
+/** The legal pages shown in the footer, one column per group. */
 export const LEGAL_NAV: NavGroup[] = [
   {
     label: "Investor information",
@@ -122,17 +116,18 @@ export const LEGAL_NAV: NavGroup[] = [
       { label: "Important Links", href: "/legal/important-links" },
     ],
   },
-  {
-    label: "Legal and disclosures",
-    links: [
-      { label: "Risk Factors", href: "/legal/risk-factors" },
-      { label: "Terms and Conditions", href: "/legal/terms-and-conditions" },
-      { label: "Disclaimer", href: "/legal/disclaimer" },
-      { label: "Privacy Policy", href: ROUTES.privacyPolicy },
-      { label: "Commission Disclosures", href: ROUTES.commissionDisclosures },
-      { label: "Registration Disclosure", href: "/legal/registration-disclosure" },
-    ],
-  },
+  // HIDDEN_LEGAL: footer column hidden at the client's request.
+  // {
+    // label: "Legal and disclosures",
+    // links: [
+      // { label: "Risk Factors", href: "/legal/risk-factors" },
+      // { label: "Terms and Conditions", href: "/legal/terms-and-conditions" },
+      // { label: "Disclaimer", href: "/legal/disclaimer" },
+      // { label: "Privacy Policy", href: ROUTES.privacyPolicy },
+      // { label: "Commission Disclosures", href: ROUTES.commissionDisclosures },
+      // { label: "Registration Disclosure", href: "/legal/registration-disclosure" },
+    // ],
+  // },
 ];
 
 /** AMFI's mandatory warning for mutual fund communications: keep the wording exactly as is. */

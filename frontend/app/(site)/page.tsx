@@ -1,5 +1,5 @@
 import { HOME_FAQS } from "@/lib/content/faqs";
-import { INVESTOR_CONTENT } from "@/lib/content/investors";
+// HIDDEN_INVESTORS: import { INVESTOR_CONTENT } from "@/lib/content/investors";
 import { HOW_IT_WORKS } from "@/lib/content/services";
 import { getAnnouncements, getSiteSettings, getTestimonials } from "@/lib/site-data";
 import { Hero } from "../components/Hero";
@@ -13,17 +13,19 @@ import {
   Newsletter,
   Stats,
   Testimonials,
-  WhoWeServe,
+  WavesQuote,
+  // HIDDEN_INVESTORS: WhoWeServe,
   WordStack,
 } from "../components/sections";
 import { HomeBanner } from "../components/site/notices";
-import { GeoBlocks, Mountain, PhoneMockup, Pie, ProCard } from "../components/visuals";
+import { GeoBlocks, /* HIDDEN_MOUNTAIN: Mountain, */ PhoneMockup, Pie, ProCard } from "../components/visuals";
 
-const WHO_WE_SERVE = INVESTOR_CONTENT.map((group) => ({
-  title: group.title,
-  headline: group.headline,
-  href: `/investors/${group.slug}`,
-}));
+// HIDDEN_INVESTORS:
+// const WHO_WE_SERVE = INVESTOR_CONTENT.map((group) => ({
+//   title: group.title,
+//   headline: group.headline,
+//   href: `/investors/${group.slug}`,
+// }));
 
 // The header and footer come from app/(site)/layout.tsx.
 export default async function Home() {
@@ -73,6 +75,7 @@ export default async function Home() {
           bleed={<GeoBlocks />}
         />
 
+        {/* HIDDEN_MOUNTAIN: the Everest slide, hidden at the client's request.
         <FeaturePanel
           id="retirement-planning"
           product="Retirement Planning"
@@ -82,7 +85,7 @@ export default async function Home() {
           background="linear-gradient(180deg, #cdbba6 0%, #dac9b5 10%, #e6d7c4 20%, #efe0ce 30%, #f6e6d3 40%, #fae8d6 50%, #fde8d4 60%, #fee6d0 70%, #ffe3cc 80%, #ffdfc6 90%, #ffdcc0 100%)"
           bleed={<Mountain />}
           hold={0}
-        />
+        /> */}
 
         <FeaturePanel
           id="tax-saving"
@@ -94,8 +97,10 @@ export default async function Home() {
           visual={<Pie />}
         />
 
+        <WavesQuote />
+
         <HowItWorks steps={HOW_IT_WORKS} />
-        <WhoWeServe groups={WHO_WE_SERVE} />
+        {/* HIDDEN_INVESTORS: <WhoWeServe groups={WHO_WE_SERVE} /> */}
         {visible.stats && <Stats stats={settings.stats} />}
         {visible.testimonials && testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
         {visible.newsletter && <Newsletter />}

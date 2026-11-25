@@ -1,6 +1,6 @@
 /**
  * Products and services, grouped the way the Services menu shows them. Each category has a landing page
- * at /<category> and each product a page at /<category>/<slug> (app/(site)/[category]).
+ * at /<category> (unless `noLanding`) and each product a page at /<category>/<slug> (app/(site)/[category]).
  *
  * Copy rules: Planit distributes products; it does not advise. Never promise or imply returns, attribute
  * research and broking to the partner that provides it, and keep each product's disclaimer.
@@ -38,8 +38,8 @@ export type ProductPage = PageContent & { slug: string };
 export type ProductCategory = PageContent & {
   slug: string;
   pages: ProductPage[];
-  /** Has its own top-level menu tab (lib/site.ts) instead of sitting under Services. */
-  ownTab?: boolean;
+  /** No landing page: the category is only a URL prefix, and its pages sit directly in the Services menu. */
+  noLanding?: boolean;
 };
 
 export const HOW_IT_WORKS = [
@@ -69,6 +69,9 @@ const PMS_AIF_DISCLAIMER =
 
 const INSURANCE_DISCLAIMER =
   "Insurance is the subject matter of solicitation. Policies are issued by the insurer; please read the policy wording, benefits, exclusions and terms carefully before buying.";
+
+const PMS_AIF_INTRO =
+  "At PLANIT, we help eligible investors explore specialised investment solutions through Portfolio Management Services (PMS) and Alternative Investment Funds (AIFs). These offerings provide access to professionally managed portfolios and alternative investment strategies that may complement traditional investments such as mutual funds and stocks.";
 
 const PMS_AIF_DISTRIBUTION =
   "Through our distribution network, we help investors understand available strategies, investment objectives, eligibility criteria, minimum investment requirements, and associated risks, enabling them to make informed investment decisions aligned with their financial goals.";
@@ -118,7 +121,8 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       },
       {
         q: "How are you paid?",
-        a: "Fund houses pay us a commission on the schemes you invest in through us; it is included in the scheme's expense ratio, not charged to you separately. Our commission rates are listed in full on our Commission Disclosures page.",
+        a: "Fund houses pay us a commission on the schemes you invest in through us; it is included in the scheme's expense ratio, not charged to you separately.",
+        // HIDDEN_LEGAL: the answer ended: Our commission rates are listed in full on our Commission Disclosures page.
       },
     ],
     calculator: { label: "Lumpsum calculator", href: "/calculators/lumpsum" },
@@ -353,12 +357,10 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
   },
   {
     slug: "invest",
-    title: "Invest",
-    ownTab: true,
+    title: "Bonds and Unlisted Shares",
+    noLanding: true,
     summary: "Bonds and unlisted shares, for investors who want to look beyond mutual funds and listed stocks.",
-    intro: [
-      "Alongside mutual funds and listed shares, some investors look at fixed-income instruments for regular income, or at companies that are not yet listed on a stock exchange. We help you understand how these investments work, what they cost and the risks they carry, so you can decide whether they suit your goals.",
-    ],
+    intro: [],
     pages: [
       {
         slug: "bonds",
@@ -393,24 +395,21 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
   },
   {
     slug: "wealth",
-    title: "Wealth",
+    title: "PMS and AIF",
+    noLanding: true,
     summary: "Portfolio Management Services and Alternative Investment Funds for eligible investors.",
-    heading: "Explore Advanced Investment Opportunities. Diversify Your Wealth.",
-    intro: [
-      "At PLANIT, we help eligible investors explore specialised investment solutions through Portfolio Management Services (PMS) and Alternative Investment Funds (AIFs). These offerings provide access to professionally managed portfolios and alternative investment strategies that may complement traditional investments such as mutual funds and stocks.",
-      PMS_AIF_DISTRIBUTION,
-    ],
-    signoff: "PLANIT — Expanding Opportunities for Informed Investors.",
-    disclaimer: PMS_AIF_DISCLAIMER,
+    intro: [],
     pages: [
       {
         slug: "pms",
         title: "PMS Distribution",
+        menuLabel: "PMS",
         enquiryValue: "pms",
         summary: "Professionally managed portfolios of stocks and other securities, held in your own name, for eligible investors.",
         heading: "Explore Advanced Investment Opportunities.",
         intro: [
           "Portfolio Management Services (PMS) give you a professionally managed portfolio of stocks and other securities, held in your own name and managed by a SEBI-registered portfolio manager according to a stated strategy.",
+          PMS_AIF_INTRO,
           PMS_AIF_DISTRIBUTION,
         ],
         list: {
@@ -429,11 +428,13 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
       {
         slug: "aif",
         title: "AIF Distribution",
+        menuLabel: "AIF",
         enquiryValue: "aif",
         summary: "Privately pooled, SEBI-registered funds that follow alternative investment strategies, for eligible investors.",
         heading: "Diversify Your Wealth.",
         intro: [
           "Alternative Investment Funds (AIFs) are privately pooled investment funds registered with SEBI. Depending on their category, they may invest in areas such as unlisted companies, private credit, real estate or long-short equity strategies.",
+          PMS_AIF_INTRO,
           PMS_AIF_DISTRIBUTION,
         ],
         list: {
@@ -564,9 +565,16 @@ export function getProduct(categorySlug: string, slug: string) {
   return category && page ? { category, page } : undefined;
 }
 
+/** Top-level services in menu order: a category's landing page, or each page of a category without one. */
+export const SERVICE_ENTRIES = PRODUCT_CATEGORIES.flatMap((category) =>
+  category.noLanding
+    ? category.pages.map((page) => ({ label: page.menuLabel ?? page.title, href: productHref(category, page) }))
+    : [{ label: category.title, href: categoryHref(category) }],
+);
+
 /** Every category and product page, flattened, with its URL. Slugs are unique across the whole tree. */
 export const ALL_PRODUCTS = PRODUCT_CATEGORIES.flatMap((category) => [
-  { ...category, href: categoryHref(category) },
+  ...(category.noLanding ? [] : [{ ...category, href: categoryHref(category) }]),
   ...category.pages.map((page) => ({ ...page, href: productHref(category, page) })),
 ]);
 

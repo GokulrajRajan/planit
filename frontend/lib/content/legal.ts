@@ -1,5 +1,6 @@
 /**
- * The 12 legal pages (app/(site)/legal/[slug]). Their wording comes from the client: paste the approved
+ * The legal pages (app/(site)/legal/[slug]). Six of the 12 are commented out at the client's request: search
+ * the frontend for HIDDEN_LEGAL to find every part that belongs to them. Their wording comes from the client: paste the approved
  * text into `sections`. Until then a page shows a short "being finalised" notice instead of draft legal text.
  *
  * `builtIn` pages also render content generated from site data (official links, registration details,
@@ -17,30 +18,31 @@ export type LegalPage = {
 };
 
 export const LEGAL_PAGES: LegalPage[] = [
-  {
-    slug: "risk-factors",
-    title: "Risk Factors",
-    summary: "The main risks of investing in mutual funds, and what they mean for you.",
-    sections: null,
-  },
-  {
-    slug: "terms-and-conditions",
-    title: "Terms and Conditions",
-    summary: "The terms that apply when you use this website and our services.",
-    sections: null,
-  },
-  {
-    slug: "disclaimer",
-    title: "Disclaimer",
-    summary: "Important information about the content on this website.",
-    sections: null,
-  },
-  {
-    slug: "privacy-policy",
-    title: "Privacy Policy",
-    summary: "How we collect, use and protect your personal information.",
-    sections: null,
-  },
+  // HIDDEN_LEGAL: hidden at the client's request; uncomment to bring the page back.
+  // {
+    // slug: "risk-factors",
+    // title: "Risk Factors",
+    // summary: "The main risks of investing in mutual funds, and what they mean for you.",
+    // sections: null,
+  // },
+  // {
+    // slug: "terms-and-conditions",
+    // title: "Terms and Conditions",
+    // summary: "The terms that apply when you use this website and our services.",
+    // sections: null,
+  // },
+  // {
+    // slug: "disclaimer",
+    // title: "Disclaimer",
+    // summary: "Important information about the content on this website.",
+    // sections: null,
+  // },
+  // {
+    // slug: "privacy-policy",
+    // title: "Privacy Policy",
+    // summary: "How we collect, use and protect your personal information.",
+    // sections: null,
+  // },
   {
     slug: "grievance-redressal",
     title: "Grievance Redressal",
@@ -66,29 +68,31 @@ export const LEGAL_PAGES: LegalPage[] = [
     summary: "Practical guidance to help you invest safely.",
     sections: null,
   },
-  {
-    slug: "commission-disclosures",
-    title: "Commission Disclosures",
-    summary: "The commission we receive from fund houses on the schemes we distribute.",
-    sections: null,
-  },
+  // HIDDEN_LEGAL: hidden at the client's request; uncomment to bring the page back.
+  // {
+    // slug: "commission-disclosures",
+    // title: "Commission Disclosures",
+    // summary: "The commission we receive from fund houses on the schemes we distribute.",
+    // sections: null,
+  // },
   {
     slug: "client-onboarding-and-kyc-policy",
     title: "Client Onboarding and KYC Policy",
     summary: "How we onboard clients and verify identity, as required by regulation.",
     sections: null,
   },
-  {
-    slug: "registration-disclosure",
-    title: "Registration Disclosure",
-    summary: "Our registration with the Association of Mutual Funds in India (AMFI).",
-    sections: null,
-    builtIn: "registration",
-  },
+  // HIDDEN_LEGAL: hidden at the client's request; uncomment to bring the page back.
+  // {
+    // slug: "registration-disclosure",
+    // title: "Registration Disclosure",
+    // summary: "Our registration with the Association of Mutual Funds in India (AMFI).",
+    // sections: null,
+    // builtIn: "registration",
+  // },
   {
     slug: "important-links",
     title: "Important Links",
-    summary: "Official websites of the regulator, industry body and depositories.",
+    summary: "Official websites of the regulator, industry body and fund registrars.",
     sections: null,
     builtIn: "important-links",
   },

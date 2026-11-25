@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import { CLIENT_ARN, REGISTRATIONS } from "@/lib/client-info";
 import { OFFICIAL_LINKS } from "@/lib/official-links";
-import { FOOTER_QUICK_LINKS, LEGAL_NAV, MF_RISK_WARNING, ROUTES } from "@/lib/site";
+import { FOOTER_QUICK_LINKS, LEGAL_NAV, MF_RISK_WARNING /* HIDDEN_LEGAL: , ROUTES */ } from "@/lib/site";
 import type { SiteSettings } from "@/lib/site-data";
 import { Logo } from "./Logo";
+import { PhoneLinks } from "./PhoneLinks";
 import { SocialLinks } from "./SocialLinks";
 
 const formatDate = (iso: string) =>
@@ -22,15 +25,35 @@ function OfficialLink({ name }: { name: keyof typeof OFFICIAL_LINKS }) {
   );
 }
 
+/** "Name | Registration | Number": each part stays in one piece when the line wraps. */
+function RegistrationLine({ items }: { items: (string | null | false)[] }) {
+  const parts = items.filter(Boolean);
+  return (
+    <p className="footer__registration">
+      {parts.map((part, i) => (
+        // The bar stays with the part before it, so no line starts with one.
+        <Fragment key={i}>
+          <span className="whitespace-nowrap">
+            {part}
+            {i < parts.length - 1 && " |"}
+          </span>{" "}
+        </Fragment>
+      ))}
+    </p>
+  );
+}
+
 /** Site footer. Contact, registration and grievance details appear only once they're filled in. */
 export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logoUrl: string | null }) {
   const { office, registration, grievance_officer: officer, visible_sections: visible } = settings;
   const firmName = office.legal_name ?? "Planit";
+  // The client's ARN is in a person's name; a different ARN saved in the admin panel is taken to be the firm's.
+  const arnHolder = registration.arn === CLIENT_ARN ? REGISTRATIONS.arnHolder : firmName;
   const cityLine = [office.city, office.state].filter(Boolean).join(", ");
-  const address = [office.address_line1, office.address_line2, [cityLine, office.pincode].filter(Boolean).join(" ")]
-    .filter(Boolean)
-    .join(", ");
-  const hasContact = Boolean(address || office.phone || office.email || office.hours);
+  const street = [office.address_line1, office.address_line2].filter(Boolean).join(", ");
+  const cityAndPin = [cityLine, office.pincode].filter(Boolean).join(" - ");
+  const hasAddress = Boolean(street || cityAndPin);
+  const hasContact = Boolean(hasAddress || office.phone || office.email || office.hours);
 
   return (
     <footer className="footer">
@@ -41,8 +64,17 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
             <p>Mutual fund distribution for individuals, families and businesses.</p>
             {hasContact && (
               <address className="footer__contact">
-                {address && <span>{address}</span>}
-                {office.phone && <a href={`tel:${office.phone.replace(/[^\d+]/g, "")}`}>{office.phone}</a>}
+                {hasAddress && (
+                  <span>
+                    {street && cityAndPin ? `${street}, ` : street}
+                    <span className="whitespace-nowrap">{cityAndPin}</span>
+                  </span>
+                )}
+                {office.phone && (
+                  <span>
+                    <PhoneLinks phone={office.phone} />
+                  </span>
+                )}
                 {office.email && <a href={`mailto:${office.email}`}>{office.email}</a>}
                 {office.hours && <span>{office.hours}</span>}
               </address>
@@ -91,12 +123,25 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
 
         <div className="footer__compliance">
           {visible.registration_details && (
-            <p>
-              {firmName} is an AMFI-registered Mutual Fund Distributor. ARN: {registration.arn}
-              {registration.arn_valid_until && ` (valid till ${formatDate(registration.arn_valid_until)})`}
-              {registration.euin && ` · EUIN: ${registration.euin}`}
-              {registration.cin && ` · CIN: ${registration.cin}`}
-            </p>
+            <>
+              <RegistrationLine
+                items={[
+                  arnHolder,
+                  "AMFI-registered Mutual Fund Distributor",
+                  `${registration.arn}${registration.arn_valid_until ? ` (valid till ${formatDate(registration.arn_valid_until)})` : ""}`,
+                  registration.euin && `EUIN: ${registration.euin}`,
+                  registration.cin && `CIN: ${registration.cin}`,
+                ]}
+              />
+              <RegistrationLine
+                items={[
+                  firmName,
+                  `NSE Regn. No. ${REGISTRATIONS.nse}`,
+                  `BSE Regn. No. ${REGISTRATIONS.bse}`,
+                  `GSTIN ${REGISTRATIONS.gstin}`,
+                ]}
+              />
+            </>
           )}
           {visible.grievance_officer && (
             <p>
@@ -115,8 +160,10 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
           <p>
             Past performance is not indicative of future returns. Figures shown on this website are illustrative
             examples, not a promise or guarantee of returns. We earn commission from mutual fund houses on the schemes
+            we distribute.
+            {/* HIDDEN_LEGAL: the sentence ended:
             we distribute; it is fully disclosed in our{" "}
-            <Link href={ROUTES.commissionDisclosures}>Commission Disclosures</Link>.
+            <Link href={ROUTES.commissionDisclosures}>Commission Disclosures</Link>. */}
           </p>
           <p>
             Complaints not resolved by us can be raised on <OfficialLink name="scores" />. For folio service requests,

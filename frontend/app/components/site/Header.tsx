@@ -20,12 +20,43 @@ const ExternalArrow = () => (
   </svg>
 );
 
-/** A link to another site from the strip above the header bar; it opens in a new tab. */
-function StripLink({ href, children }: { href: string; children: React.ReactNode }) {
+/** Pie: the mutual fund folio. */
+const FolioIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4v10.5zM14 3.5a8 8 0 0 1 6.5 6.5H14z" />
+  </svg>
+);
+
+/** Candlesticks: the demat account. */
+const DematIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M7 3v4M7 16v5M17 3v5M17 17v4M4.5 7h5v9h-5zM14.5 8h5v9h-5z" />
+  </svg>
+);
+
+/**
+ * One half of the highlighted capsule above the header bar: a link to another site, opened in a new tab.
+ * Phones show the short label so both links fit side by side.
+ */
+function StripLink({
+  href,
+  icon,
+  label,
+  shortLabel,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  shortLabel: string;
+}) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer">
-      {children}
-      <ExternalArrow />
+    <a className="strip-link" href={href} target="_blank" rel="noopener noreferrer">
+      <span className="strip-link__icon">{icon}</span>
+      <span className="strip-link__full">{label}</span>
+      <span className="strip-link__short">{shortLabel}</span>
+      <span className="strip-link__arrow">
+        <ExternalArrow />
+      </span>
       <span className="sr-only"> (opens in a new tab)</span>
     </a>
   );
@@ -118,8 +149,14 @@ export function SiteHeader({
       <header className="header" ref={headerRef}>
         {(portalUrl || dematUrl) && (
           <div className="header__strip">
-            {portalUrl && <StripLink href={portalUrl}>View Your MF Folio</StripLink>}
-            {dematUrl && <StripLink href={dematUrl}>Open a Free Demat Account</StripLink>}
+            <div className="strip-links">
+              {portalUrl && (
+                <StripLink href={portalUrl} icon={<FolioIcon />} label="View Your MF Folio" shortLabel="View MF Folio" />
+              )}
+              {dematUrl && (
+                <StripLink href={dematUrl} icon={<DematIcon />} label="Open a Free Demat Account" shortLabel="Free Demat Account" />
+              )}
+            </div>
           </div>
         )}
         <div className="header__bar">

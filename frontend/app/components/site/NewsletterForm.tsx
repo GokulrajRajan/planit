@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
+// HIDDEN_LEGAL: import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { ROUTES } from "@/lib/site";
+// HIDDEN_LEGAL: import { ROUTES } from "@/lib/site";
 import { applyServerError, FormAlert, SubmitButton } from "../form";
 import { Captcha, CAPTCHA_ENABLED, type CaptchaHandle } from "./Captcha";
 
@@ -95,8 +95,9 @@ export function NewsletterForm() {
           {...register("consent")}
         />
         <span>
-          I agree to receive the Planit Brief by email, and know I can ask to unsubscribe at any time. See our{" "}
-          <Link href={ROUTES.privacyPolicy}>Privacy Policy</Link>.
+          I agree to receive the Planit Brief by email, and know I can ask to unsubscribe at any time.
+          {/* HIDDEN_LEGAL: See our{" "}
+          <Link href={ROUTES.privacyPolicy}>Privacy Policy</Link>. */}
         </span>
       </label>
       {consentError && (

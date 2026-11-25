@@ -6,53 +6,27 @@ import { ROUTES } from "@/lib/site";
 import { pauseClip, playClip, useMotion } from "./motion";
 import { SmartLink } from "./site/SmartLink";
 
-/** x/y: tile centre relative to the card centre, in card widths. s: tile width in card widths. ar: width / height. */
-type Pos = { x: number; y: number; s: number; ar?: number };
+type HeroClip = {
+  name: string;
+  /** Width / height. */
+  ar: number;
+  /** At the top of the page: centre from the middle of the stage, and height, in --u (the middle clip's height). */
+  a: { x: number; y: number; h: number };
+  /** Around the glass dashboard: centre from the middle of the stage, and width, in card widths. */
+  b: { x: number; y: number; w: number };
+  dur: number;
+  delay: number;
+};
 
-// Footage in /public/hero (Mixkit Stock Video Free License: commercial use, no attribution needed).
-// The six video tiles share one 3x2 grid video (tiles.mp4, 240px cells) so the browser decodes a single
-// stream; each tile copies its `cell` onto a canvas. `still` tiles are too small to read as video.
-// a: around the photo (top of the page), b: around the glass dashboard. Measured from the reference video.
-const ATLAS = { cols: 3, rows: 2, cell: 240 };
-
-const TILES: { cell?: number; still?: string; a: Pos; b: Pos; dur: number; delay: number }[] = [
-  { cell: 0, a: { x: 0.39, y: -0.66, s: 0.24 }, b: { x: -1.11, y: 0.05, s: 0.31 }, dur: 7, delay: 0 },
-  { cell: 1, a: { x: 0.68, y: -0.56, s: 0.1 }, b: { x: 0.81, y: -0.24, s: 0.12 }, dur: 8, delay: -2 },
-  { cell: 2, a: { x: -0.53, y: 0.1, s: 0.13, ar: 0.32 }, b: { x: 0.28, y: -0.56, s: 0.29 }, dur: 9, delay: -1 },
-  { cell: 3, a: { x: 0.6, y: 0.12, s: 0.11, ar: 0.35 }, b: { x: -0.42, y: 0.19, s: 0.26 }, dur: 6.5, delay: -3 },
-  { cell: 4, a: { x: -0.89, y: 0.39, s: 0.27 }, b: { x: -0.78, y: 0.78, s: 0.26 }, dur: 7.5, delay: -4 },
-  { cell: 5, a: { x: -0.58, y: 0.53, s: 0.14 }, b: { x: -1.45, y: 0.62, s: 0.05 }, dur: 8.5, delay: -1.5 },
-  { still: "park-reading", a: { x: -1.34, y: 0.53, s: 0.06 }, b: { x: 0.95, y: -0.7, s: 0.04 }, dur: 7, delay: -2.5 },
-  { still: "kids-fountain", a: { x: -1.18, y: 0.31, s: 0.05 }, b: { x: -1.6, y: 0.2, s: 0.04 }, dur: 9.5, delay: -0.5 },
+// The client's clips in /public/hero: silent, with their ends faded into their starts so they loop smoothly.
+// Third-party clips: their use depends on the client holding the owners' permission (confirmed Nov 2026).
+// market-chart is cut to the chart only; the rest of that video shows trade calls and an advert.
+const CLIPS: HeroClip[] = [
+  { name: "market-chart", ar: 9 / 16, a: { x: -0.58, y: 0.05, h: 0.78 }, b: { x: -1.02, y: -0.26, w: 0.4 }, dur: 8, delay: -2 },
+  { name: "bull-bear", ar: 420 / 626, a: { x: 0.63, y: 0.04, h: 0.78 }, b: { x: 1.04, y: 0.1, w: 0.46 }, dur: 7, delay: -4 },
+  { name: "savings", ar: 9 / 16, a: { x: 0, y: 0, h: 1 }, b: { x: -0.88, y: 0.46, w: 0.34 }, dur: 9, delay: -1 },
 ];
-
-/** Grid-video cell as a background, shown until the canvas has drawn its first frame. */
-function cellPoster(cell: number): React.CSSProperties {
-  const col = cell % ATLAS.cols;
-  const row = Math.floor(cell / ATLAS.cols);
-  return {
-    backgroundImage: "url(/hero/tiles.jpg)",
-    backgroundSize: `${ATLAS.cols * 100}% ${ATLAS.rows * 100}%`,
-    backgroundPosition: `${(col / (ATLAS.cols - 1)) * 100}% ${(row / (ATLAS.rows - 1)) * 100}%`,
-  };
-}
-
-/** Muted looping clip with its poster frame shown until the video can play. */
-function Clip({ name, className }: { name: string; className?: string }) {
-  return (
-    <video
-      className={className}
-      src={`/hero/${name}.mp4`}
-      poster={`/hero/${name}.jpg`}
-      muted
-      loop
-      playsInline
-      autoPlay
-      preload="auto"
-      disablePictureInPicture
-    />
-  );
-}
+const MIDDLE = CLIPS.length - 1;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const smooth = (v: number) => {
@@ -175,54 +149,65 @@ export function GlassPortfolio({ value, scrub = false, chart = false }: { value:
 }
 
 /**
- * Pinned for one extra viewport of scrolling. That scroll drives the whole intro: the photo shrinks
- * into a tile, the glass dashboard grows in, its number rolls, the line becomes a stock chart and the
- * tiles regroup. Only the line's gentle wiggle and the background drift run on their own.
+ * Pinned for one extra viewport of scrolling. That scroll drives the whole intro: the clips shrink and
+ * move aside, the glass dashboard grows in between them, its number rolls and the line becomes a stock
+ * chart. Only the clips, the line's gentle wiggle and the background drift run on their own.
  */
 export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
   const { paused } = useMotion();
   const sceneRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const timeRef = useRef(0);
   const progressRef = useRef<number | null>(null);
-  const atlasRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const scene = sceneRef.current;
     const hero = heroRef.current;
+    const stage = stageRef.current;
     const card = cardRef.current;
     const path = pathRef.current;
     const svg = svgRef.current;
-    const atlas = atlasRef.current;
-    if (!scene || !hero || !card || !path || !svg || !atlas) return;
+    if (!scene || !hero || !stage || !card || !path || !svg) return;
 
-    const tileCanvases = [...hero.querySelectorAll<HTMLCanvasElement>("canvas[data-cell]")].map((canvas) => ({
-      ctx: canvas.getContext("2d"),
-      sx: (Number(canvas.dataset.cell) % ATLAS.cols) * ATLAS.cell,
-      sy: Math.floor(Number(canvas.dataset.cell) / ATLAS.cols) * ATLAS.cell,
+    // dx, dy and scale take each clip from its place at the top of the page to its place by the dashboard.
+    const clips = [...hero.querySelectorAll<HTMLElement>("[data-clip]")].map((el) => ({
+      el,
+      b: CLIPS[Number(el.dataset.clip)].b,
+      dx: 0,
+      dy: 0,
+      scale: 1,
     }));
-    let atlasTime = -1;
-    const drawTiles = () => {
-      if (atlas.readyState < 2 || atlas.currentTime === atlasTime) return;
-      atlasTime = atlas.currentTime;
-      for (const { ctx, sx, sy } of tileCanvases) {
-        ctx?.drawImage(atlas, sx, sy, ATLAS.cell, ATLAS.cell, 0, 0, ATLAS.cell, ATLAS.cell);
-      }
-    };
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const g = { cl: 0, ct: 0, cw: 0, ch: 0 };
+    let applied = -1;
+    // The card (c…) and the middle clip (p…), in px from the hero's top left.
+    const g = { cl: 0, ct: 0, cw: 0, ch: 0, pl: 0, pt: 0, pw: 0, ph: 0 };
     const measure = () => {
       const hr = hero.getBoundingClientRect();
-      // offsetLeft ignores the card's translateX(-50%), so correct for it.
+      // The card and the clips are placed by their centres; offsets ignore the transforms that centre them.
+      const cx = stage.offsetLeft + stage.offsetWidth / 2;
+      const cy = stage.offsetTop + stage.offsetHeight / 2;
       g.cw = card.offsetWidth;
       g.ch = card.offsetHeight;
-      g.cl = card.offsetLeft - g.cw / 2;
-      g.ct = card.offsetTop;
+      g.cl = cx - g.cw / 2;
+      g.ct = cy - g.ch / 2;
+      clips.forEach((clip, i) => {
+        const x = stage.offsetLeft + clip.el.offsetLeft;
+        const y = stage.offsetTop + clip.el.offsetTop;
+        const w = clip.el.offsetWidth;
+        const h = clip.el.offsetHeight;
+        clip.dx = cx + clip.b.x * g.cw - x;
+        clip.dy = cy + clip.b.y * g.cw - y;
+        clip.scale = w ? (clip.b.w * g.cw) / w : 1;
+        if (i === MIDDLE) Object.assign(g, { pl: x - w / 2, pt: y - h / 2, pw: w, ph: h });
+      });
       svg.setAttribute("viewBox", `0 0 ${hr.width} ${hr.height}`);
+      // Re-place the clips on the next frame.
+      applied = -1;
     };
 
     const scrollProgress = () => {
@@ -232,35 +217,35 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
     };
 
     const apply = (h: number) => {
-      hero.style.setProperty("--ph", smooth(seg(h, 0.05, 0.6)).toFixed(4));
+      const t = smooth(seg(h, 0.08, 0.7));
+      for (const { el, dx, dy, scale } of clips) {
+        el.style.transform = `translate(-50%, -50%) translate(${(dx * t).toFixed(1)}px, ${(dy * t).toFixed(1)}px) scale(${(1 + (scale - 1) * t).toFixed(4)})`;
+      }
       hero.style.setProperty("--gl", smooth(seg(h, 0.25, 0.8)).toFixed(4));
-      hero.style.setProperty("--tl", smooth(seg(h, 0.1, 0.75)).toFixed(4));
       hero.style.setProperty("--od", seg(h, 0.35, 0.95).toFixed(4));
       hero.style.setProperty("--bgp", h.toFixed(4));
     };
 
     const draw = (t: number, mix: number) => {
-      const { cl, ct, cw, ch } = g;
+      const { cl, ct, cw, ch, pl, pt, pw, ph } = g;
       if (!cw) return;
 
-      // At the top: square photo centred on the card.
-      const ps = cw * 0.95;
-      const pl = cl + (cw - ps) / 2;
-      const pt = ct + (ch - ps) / 2;
-      const xEnd = pl + ps * 0.78 + (cl + cw * 0.93 - (pl + ps * 0.78)) * mix;
+      // At the top, the line runs in from the left and climbs across the middle clip.
+      const ps = ph * 0.67;
+      const xEnd = pl + pw * 0.8 + (cl + cw * 0.93 - (pl + pw * 0.8)) * mix;
 
       let d = "";
       for (let x = -12; x <= xEnd; x += 6) {
-        // Smooth deep waves that flatten towards the photo, then climb into a spike inside it.
+        // Smooth deep waves that flatten towards the middle clip, then climb into a spike inside it.
         const k = clamp01(x / pl);
         const wave =
           (Math.sin(x * 0.0105 + t * 0.55) * 0.62 + Math.sin(x * 0.024 - t * 0.85 + 1.3) * 0.38) *
           ps *
           0.62 *
           Math.pow(1 - k, 0.65);
-        const u = clamp01((x - pl) / (ps * 0.78));
+        const u = clamp01((x - pl) / (pw * 0.8));
         const spike = smooth((x - pl + 40) / 80) * ps * (0.52 * Math.pow(u, 2.4) + 0.05 * Math.sin(x * 0.08 + t * 1.6));
-        const yPhoto = pt + ps * 0.62 + wave - spike;
+        const yPhoto = pt + ph * 0.66 + wave - spike;
 
         // Jagged stock line rising from the lower left into the dashboard's chart band.
         const r = clamp01(x / cl);
@@ -283,7 +268,6 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
     let raf = 0;
     let visible = true;
     let last = performance.now();
-    let applied = -1;
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
@@ -302,7 +286,6 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
         applied = h;
       }
       draw(timeRef.current, smooth(seg(h, 0.1, 0.8)));
-      drawTiles();
       raf = visible ? requestAnimationFrame(frame) : 0;
     };
 
@@ -339,61 +322,44 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
       <div ref={heroRef} className="hero">
         <div className="hero__bg" aria-hidden="true" />
 
-        <div ref={cardRef} className="hero__card" aria-hidden="true">
-          <GlassPortfolio value={1248350} scrub />
-          <div className="hero__photo">
-            <Clip name="kids-fountain" className="hero__media" />
+        <div ref={stageRef} className="hero__stage" aria-hidden="true">
+          <div ref={cardRef} className="hero__card">
+            <GlassPortfolio value={1248350} scrub />
           </div>
-        </div>
 
-        <video
-          ref={atlasRef}
-          className="hero__atlas"
-          src="/hero/tiles.mp4"
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="auto"
-          disablePictureInPicture
-          aria-hidden="true"
-        />
-
-        {TILES.map((tile, i) => (
-          <div
-            key={i}
-            className="hero__tile"
-            aria-hidden="true"
-            style={
-              {
-                "--ax": tile.a.x,
-                "--ay": tile.a.y,
-                "--as": tile.a.s,
-                "--aar": tile.a.ar ?? 1,
-                "--bx": tile.b.x,
-                "--by": tile.b.y,
-                "--bs": tile.b.s,
-                "--bar": tile.b.ar ?? 1,
-                "--dur": `${tile.dur}s`,
-                "--delay": `${tile.delay}s`,
-              } as React.CSSProperties
-            }
-          >
-            <div className="hero__bob">
-              {tile.still ? (
-                <span className="hero__media" style={{ backgroundImage: `url(/hero/${tile.still}.jpg)` }} />
-              ) : (
-                <canvas
+          {CLIPS.map((clip, i) => (
+            <div
+              key={clip.name}
+              className="hero__clip"
+              data-clip={i}
+              style={
+                {
+                  "--ax": clip.a.x,
+                  "--ay": clip.a.y,
+                  "--ah": clip.a.h,
+                  "--ar": clip.ar,
+                  "--dur": `${clip.dur}s`,
+                  "--delay": `${clip.delay}s`,
+                } as React.CSSProperties
+              }
+            >
+              <div className="hero__bob">
+                {/* Muted and looping, with its poster frame shown until it can play. */}
+                <video
                   className="hero__media"
-                  data-cell={tile.cell}
-                  width={ATLAS.cell}
-                  height={ATLAS.cell}
-                  style={cellPoster(tile.cell ?? 0)}
+                  src={`/hero/${clip.name}.mp4`}
+                  poster={`/hero/${clip.name}.jpg`}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="auto"
+                  disablePictureInPicture
                 />
-              )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         <svg ref={svgRef} className="hero__line" aria-hidden="true" preserveAspectRatio="none">
           <path ref={pathRef} pathLength={1} />
@@ -402,8 +368,8 @@ export function Hero({ startSipUrl }: { startSipUrl: string | null }) {
         <div className="hero__copy">
           <h1 className="hero__title">Start early. Invest with a plan.</h1>
           <p className="hero__sub">
-            Mutual funds, SIPs and goal planning, explained simply and reviewed regularly, with every commission
-            disclosed.
+            Mutual funds, SIPs and goal planning, explained simply and reviewed regularly.
+            {/* HIDDEN_LEGAL: the line ended: , with every commission disclosed. */}
           </p>
           <div className="hero__actions">
             <Link href={ROUTES.contact} className="pill pill--dark pill--lg">

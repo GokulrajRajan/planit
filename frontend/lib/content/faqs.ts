@@ -48,7 +48,8 @@ export const FAQ_GROUPS: { title: string; faqs: (Faq & { home?: boolean })[] }[]
     faqs: [
       {
         q: "Who is Planit?",
-        a: "Planit is a mutual fund distributor. We help you understand and choose mutual fund schemes, handle the transactions and paperwork, and review your investments over time. Our registration details are on our Registration Disclosure page.",
+        a: "Planit is a mutual fund distributor. We help you understand and choose mutual fund schemes, handle the transactions and paperwork, and review your investments over time.",
+        // HIDDEN_LEGAL: the answer ended: Our registration details are on our Registration Disclosure page.
         home: true,
       },
       {
@@ -57,7 +58,8 @@ export const FAQ_GROUPS: { title: string; faqs: (Faq & { home?: boolean })[] }[]
       },
       {
         q: "How are you paid?",
-        a: "Fund houses pay us a commission on the schemes you invest in through us. It is included in each scheme's expense ratio rather than charged to you separately, and our rates are listed in full on our Commission Disclosures page.",
+        a: "Fund houses pay us a commission on the schemes you invest in through us. It is included in each scheme's expense ratio rather than charged to you separately.",
+        // HIDDEN_LEGAL: the answer ended: , and our rates are listed in full on our Commission Disclosures page.
         home: true,
       },
       {
