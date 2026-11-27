@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CLIENT_ARN, phoneLinks, REGISTRATIONS } from "@/lib/client-info";
+import { phoneLinks } from "@/lib/phone";
 import { OFFICIAL_LINKS } from "@/lib/official-links";
 import { FOOTER_QUICK_LINKS, LEGAL_NAV, MF_RISK_WARNING /* HIDDEN_LEGAL: , ROUTES */ } from "@/lib/site";
 import type { SiteSettings } from "@/lib/site-data";
@@ -39,8 +39,8 @@ function Registration({ label, lines }: { label: string; lines: (string | null |
 export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logoUrl: string | null }) {
   const { office, registration, grievance_officer: officer, visible_sections: visible } = settings;
   const firmName = office.legal_name ?? "Planit";
-  // The client's ARN is in a person's name; a different ARN saved in the admin panel is taken to be the firm's.
-  const arnHolder = registration.arn === CLIENT_ARN ? REGISTRATIONS.arnHolder : firmName;
+  // The client's ARN is in a person's name (Site settings → Registration); otherwise it's the firm's.
+  const arnHolder = registration.arn_holder ?? firmName;
   const cityLine = [office.city, office.state].filter(Boolean).join(", ");
   const cityAndPin = [cityLine, office.pincode].filter(Boolean).join(" - ");
   const addressLines = [office.address_line1, [office.address_line2, cityAndPin].filter(Boolean).join(", ")].filter(Boolean);
@@ -122,17 +122,19 @@ export function SiteFooter({ settings, logoUrl }: { settings: SiteSettings; logo
 
         {visible.registration_details && (
           <dl className="footer__registrations">
-            <Registration
-              label="AMFI-registered Mutual Fund Distributor"
-              lines={[
-                `${arnHolder} | ${registration.arn}`,
-                registration.arn_valid_until && `Valid till ${formatDate(registration.arn_valid_until)}`,
-                registration.euin && `EUIN: ${registration.euin}`,
-              ]}
-            />
-            <Registration label="NSE Regn. No." lines={[REGISTRATIONS.nse]} />
-            <Registration label="BSE Regn. No." lines={[REGISTRATIONS.bse]} />
-            <Registration label="GSTIN" lines={[REGISTRATIONS.gstin]} />
+            {registration.arn && (
+              <Registration
+                label="AMFI-registered Mutual Fund Distributor"
+                lines={[
+                  `${arnHolder} | ${registration.arn}`,
+                  registration.arn_valid_until && `Valid till ${formatDate(registration.arn_valid_until)}`,
+                  registration.euin && `EUIN: ${registration.euin}`,
+                ]}
+              />
+            )}
+            {registration.nse_ap_number && <Registration label="NSE Regn. No." lines={[registration.nse_ap_number]} />}
+            {registration.bse_ap_number && <Registration label="BSE Regn. No." lines={[registration.bse_ap_number]} />}
+            {registration.gstin && <Registration label="GSTIN" lines={[registration.gstin]} />}
             {registration.cin && <Registration label="CIN" lines={[registration.cin]} />}
           </dl>
         )}

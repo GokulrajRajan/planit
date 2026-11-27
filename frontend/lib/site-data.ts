@@ -1,5 +1,4 @@
 import type { ApiEnvelope } from "./api";
-import { withClientInfo } from "./client-info";
 
 /** Mirrors backend/app/schemas/settings_schema.py. Every field is empty until the client supplies it. */
 export type SiteSettings = {
@@ -19,11 +18,17 @@ export type SiteSettings = {
   };
   registration: {
     arn: string | null;
+    /** The person or firm the ARN is registered to, when that isn't the business name. */
+    arn_holder: string | null;
     arn_valid_from: string | null;
     arn_valid_until: string | null;
     euin: string | null;
     euin_valid_until: string | null;
     cin: string | null;
+    /** Authorised person registration numbers with the exchanges. */
+    nse_ap_number: string | null;
+    bse_ap_number: string | null;
+    gstin: string | null;
   };
   grievance_officer: {
     name: string | null;
@@ -92,7 +97,7 @@ const DEFAULT_OPEN_ACCOUNT_URL = "https://www.motilaloswal.com/open-demat-accoun
 
 /**
  * Used when the API can't be reached (e.g. a deployment without the backend): everything that depends on
- * client data stays hidden, except the MF folio and demat account links and what lib/client-info.ts fills in.
+ * client data stays hidden, except the MF folio and demat account links, which are known in advance.
  */
 const EMPTY_SETTINGS: SiteSettings = {
   branding: { logo_url: null, primary_color: null, accent_color: null },
@@ -109,7 +114,18 @@ const EMPTY_SETTINGS: SiteSettings = {
     map_embed_url: null,
     google_business_url: null,
   },
-  registration: { arn: null, arn_valid_from: null, arn_valid_until: null, euin: null, euin_valid_until: null, cin: null },
+  registration: {
+    arn: null,
+    arn_holder: null,
+    arn_valid_from: null,
+    arn_valid_until: null,
+    euin: null,
+    euin_valid_until: null,
+    cin: null,
+    nse_ap_number: null,
+    bse_ap_number: null,
+    gstin: null,
+  },
   grievance_officer: { name: null, designation: null, email: null, phone: null, address: null },
   social_links: { facebook: null, instagram: null, linkedin: null, x: null, youtube: null },
   portal_url: DEFAULT_PORTAL_URL,
@@ -137,7 +153,7 @@ async function getData<T>(path: string): Promise<T | null> {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   const data = await getData<{ settings: SiteSettings }>("/settings");
-  return withClientInfo(data?.settings ?? EMPTY_SETTINGS);
+  return data?.settings ?? EMPTY_SETTINGS;
 }
 
 export async function getAnnouncements(placement: Announcement["placement"]): Promise<Announcement[]> {

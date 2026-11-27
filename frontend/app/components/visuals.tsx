@@ -484,7 +484,7 @@ const SEA_LAYERS = [
   { count: 6, crest: 6, top: "6%", color: "#b3c0ad", dur: 48, reverse: true },
   { count: 5, crest: 9, top: "25%", color: "#8aa79b", dur: 38, reverse: false },
   { count: 4, crest: 12, top: "47%", color: "#63877c", dur: 32, reverse: true },
-  { count: 3, crest: 10, top: "calc(100% - 62px)", color: "var(--color-paper)", dur: 30, reverse: false },
+  { count: 3, crest: 10, top: "calc(100% - 62px)", color: "var(--color-cream)", dur: 30, reverse: false },
 ];
 
 /** Sunrise over drifting waves; a small boat crosses it as the section scrolls past. */

@@ -16,6 +16,9 @@ SETTINGS_ROW_ID = 1
 DEFAULT_PORTAL_URL = "https://wealthelite.in/client-login"
 DEFAULT_OPEN_ACCOUNT_URL = "https://www.motilaloswal.com/open-demat-account"
 
+# Any one of these shows the registration details in the footer.
+REGISTRATION_NUMBERS = ("arn", "nse_ap_number", "bse_ap_number", "gstin", "cin")
+
 
 def _defaults() -> dict:
     defaults = {group: dict.fromkeys(schema().fields) for group, schema in SETTINGS_GROUPS.items()}
@@ -54,7 +57,7 @@ def visible_sections(settings: dict) -> dict[str, bool]:
         "market_update": _exists(
             Post.query.filter_by(status=PostStatus.PUBLISHED, post_type=PostType.MARKET_UPDATE)
         ),
-        "registration_details": bool(settings["registration"]["arn"]),
+        "registration_details": any(settings["registration"][key] for key in REGISTRATION_NUMBERS),
         "grievance_officer": bool(officer["name"] and (officer["email"] or officer["phone"])),
         "office_map": bool(settings["office"]["map_embed_url"]),
         "social_links": any(settings["social_links"].values()),

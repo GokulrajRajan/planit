@@ -177,7 +177,13 @@ const OFFICE: GroupConfig = {
     { name: "office.city", label: "City" },
     { name: "office.state", label: "State" },
     { name: "office.pincode", label: "PIN code", placeholder: "600001" },
-    { name: "office.phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210" },
+    {
+      name: "office.phone",
+      label: "Phone",
+      type: "tel",
+      placeholder: "+91 98765 43210",
+      hint: "For two numbers, separate them with /, e.g. +91 98765 43210 / +91 98765 43211.",
+    },
     { name: "office.email", label: "Email", type: "email" },
     { name: "office.hours", label: "Office hours", placeholder: "Mon–Sat, 10 am – 6 pm" },
     {
@@ -193,16 +199,24 @@ const OFFICE: GroupConfig = {
 
 const REGISTRATION: GroupConfig = {
   title: "Registration",
-  description: "Your AMFI registration details, shown in the footer and on the Registration Details page.",
+  description: "Your registration numbers, shown in the footer. Leave any you don't have empty: it simply won't show.",
   keys: ["registration"],
-  callout: <p>Copy these exactly from your AMFI ARN card. The Registration Details section stays hidden until the ARN is filled in.</p>,
+  callout: <p>Copy these exactly from your ARN card and registration certificates. The footer&rsquo;s registration row stays hidden until at least one number is filled in.</p>,
   fields: [
     { name: "registration.arn", label: "ARN", placeholder: "ARN-123456" },
+    {
+      name: "registration.arn_holder",
+      label: "ARN holder's name",
+      hint: "The person the ARN is registered to, if it isn't the business. Shown with the ARN in the footer.",
+    },
     { name: "registration.euin", label: "EUIN", placeholder: "E123456" },
     { name: "registration.arn_valid_from", label: "ARN valid from", type: "date" },
     { name: "registration.arn_valid_until", label: "ARN valid until", type: "date" },
     { name: "registration.euin_valid_until", label: "EUIN valid until", type: "date" },
     { name: "registration.cin", label: "CIN", hint: "Only if the business is a registered company.", placeholder: "U67190TN2020PTC123456" },
+    { name: "registration.nse_ap_number", label: "NSE registration number", placeholder: "AP0297000000" },
+    { name: "registration.bse_ap_number", label: "BSE registration number", placeholder: "AP01044601000000" },
+    { name: "registration.gstin", label: "GSTIN", placeholder: "33AAAAA0000A1Z5" },
   ],
 };
 

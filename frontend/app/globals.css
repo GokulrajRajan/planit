@@ -3763,7 +3763,7 @@ a.card:focus-visible,
   position: relative;
   padding: clamp(72px, 7vw, 110px) 0 calc(var(--sea) + clamp(110px, 9vw, 140px));
   overflow: hidden;
-  /* Starts in the colour of the slide above it. */
+  /* Starts in the cream the hero fades into, as the Plan/Invest/Grow/Retire section did. */
   background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-cream) 30%, var(--color-butter) 100%);
   text-align: center;
 }

@@ -1,7 +1,7 @@
 from marshmallow import fields, validate
 
 from app.schemas.base import REQUIRED, TrimmedSchema
-from app.utils.validators import validate_link, validate_phone
+from app.utils.validators import validate_link, validate_phone, validate_phones
 
 # Sections the admin can switch off. A switched-on section still stays hidden until the data it
 # needs exists (see settings_service.visible_sections).
@@ -52,17 +52,28 @@ class OfficeSchema(TrimmedSchema):
     pincode = fields.String(
         allow_none=True, validate=validate.Regexp(r"^\d{6}$", error="Enter a 6-digit PIN code.")
     )
-    phone = fields.String(allow_none=True, validate=validate_phone)
+    # Up to three numbers, separated by /.
+    phone = fields.String(allow_none=True, validate=validate_phones)
     email = fields.Email(allow_none=True)
     hours = _text(120)
     map_embed_url = _url()
     google_business_url = _url()
 
 
+def _exchange_number():
+    """An authorised person's NSE or BSE registration number."""
+    return fields.String(
+        allow_none=True,
+        validate=validate.Regexp(r"^AP\d{6,16}$", error="Use the format AP followed by the digits, as on the certificate."),
+    )
+
+
 class RegistrationSchema(TrimmedSchema):
     arn = fields.String(
         allow_none=True, validate=validate.Regexp(r"^ARN-\d{1,10}$", error="Use the format ARN-123456.")
     )
+    # The person or firm the ARN is registered to, when that isn't the business name.
+    arn_holder = _text(120)
     arn_valid_from = fields.Date(allow_none=True)
     arn_valid_until = fields.Date(allow_none=True)
     euin = fields.String(
@@ -73,6 +84,14 @@ class RegistrationSchema(TrimmedSchema):
         allow_none=True,
         validate=validate.Regexp(
             r"^[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}$", error="Enter the 21-character CIN, e.g. U67190TN2020PTC123456."
+        ),
+    )
+    nse_ap_number = _exchange_number()
+    bse_ap_number = _exchange_number()
+    gstin = fields.String(
+        allow_none=True,
+        validate=validate.Regexp(
+            r"^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$", error="Enter the 15-character GSTIN, e.g. 33AAAAA0000A1Z5."
         ),
     )
 

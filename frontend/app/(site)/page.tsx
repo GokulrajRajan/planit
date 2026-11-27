@@ -15,7 +15,7 @@ import {
   Testimonials,
   WavesQuote,
   // HIDDEN_INVESTORS: WhoWeServe,
-  WordStack,
+  // HIDDEN_WORDS: WordStack,
 } from "../components/sections";
 import { HomeBanner } from "../components/site/notices";
 import { GeoBlocks, /* HIDDEN_MOUNTAIN: Mountain, */ PhoneMockup, Pie, ProCard } from "../components/visuals";
@@ -40,7 +40,9 @@ export default async function Home() {
 
         <HomeBanner banner={banners[0]} />
 
-        <WordStack words={["Plan", "Invest", "Grow", "Retire"]} />
+        {/* HIDDEN_WORDS: the Plan / Invest / Grow / Retire section, replaced by the waves quote at the client's request.
+        <WordStack words={["Plan", "Invest", "Grow", "Retire"]} /> */}
+        <WavesQuote />
 
         <FeaturePanel
           id="mutual-funds"
@@ -96,8 +98,6 @@ export default async function Home() {
           background="var(--color-cream)"
           visual={<Pie />}
         />
-
-        <WavesQuote />
 
         <HowItWorks steps={HOW_IT_WORKS} />
         {/* HIDDEN_INVESTORS: <WhoWeServe groups={WHO_WE_SERVE} /> */}

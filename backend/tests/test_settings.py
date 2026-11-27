@@ -26,11 +26,15 @@ def test_defaults_are_empty_placeholders(client):
     assert settings["office"]["phone"] is None
     assert settings["registration"] == {
         "arn": None,
+        "arn_holder": None,
         "arn_valid_from": None,
         "arn_valid_until": None,
         "euin": None,
         "euin_valid_until": None,
         "cin": None,
+        "nse_ap_number": None,
+        "bse_ap_number": None,
+        "gstin": None,
     }
     assert settings["portal_url"] == DEFAULT_PORTAL_URL
     assert settings["cta"] == {"start_sip_url": None, "open_account_url": DEFAULT_OPEN_ACCOUNT_URL}
@@ -92,6 +96,27 @@ def test_registration_details_round_trip(client, admin_headers):
     assert settings["visible_sections"]["registration_details"] is True
 
 
+def test_exchange_and_tax_numbers_round_trip(client, admin_headers):
+    numbers = {
+        "arn_holder": "Prakash Ramarao",
+        "nse_ap_number": "AP0297000001",
+        "bse_ap_number": "AP01044601000001",
+        "gstin": "33AAZFP8936F1ZK",
+    }
+    settings = _patch(client, admin_headers, {"registration": numbers}).get_json()["data"]["settings"]
+
+    assert {key: settings["registration"][key] for key in numbers} == numbers
+    # The footer's registration row shows even without an ARN.
+    assert settings["visible_sections"]["registration_details"] is True
+
+
+def test_the_office_can_list_two_phone_numbers(client, admin_headers):
+    response = _patch(client, admin_headers, {"office": {"phone": "+91 98406 61811 / +91 98407 61811"}})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["settings"]["office"]["phone"] == "+91 98406 61811 / +91 98407 61811"
+
+
 @pytest.mark.parametrize(
     "payload, path",
     [
@@ -101,6 +126,11 @@ def test_registration_details_round_trip(client, admin_headers):
         ({"registration": {"euin": "X1"}}, ("registration", "euin")),
         ({"registration": {"cin": "ABC"}}, ("registration", "cin")),
         ({"registration": {"arn_valid_until": "31/03/2027"}}, ("registration", "arn_valid_until")),
+        ({"registration": {"nse_ap_number": "029759067"}}, ("registration", "nse_ap_number")),
+        ({"registration": {"bse_ap_number": "AP-0104"}}, ("registration", "bse_ap_number")),
+        ({"registration": {"gstin": "33AAZFP8936F1Z"}}, ("registration", "gstin")),
+        ({"office": {"phone": "98406 61811 / call us"}}, ("office", "phone")),
+        ({"office": {"phone": "98406 61811 / / 98407 61811"}}, ("office", "phone")),
         ({"office": {"pincode": "6000"}}, ("office", "pincode")),
         ({"office": {"email": "office"}}, ("office", "email")),
         ({"social_links": {"linkedin": "linkedin.com/company/planit"}}, ("social_links", "linkedin")),

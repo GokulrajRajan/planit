@@ -20,3 +20,12 @@ def validate_phone(value: str) -> None:
     digits = re.sub(r"\D", "", value)
     if not _PHONE.match(value) or not 7 <= len(digits) <= 15:
         raise ValidationError("Enter a valid phone number.")
+
+
+def validate_phones(value: str) -> None:
+    """One phone number, or up to three separated by / or , (e.g. "98406 61811 / 98407 61811")."""
+    numbers = [part.strip() for part in re.split(r"[/,]", value)]
+    if len(numbers) > 3 or not all(numbers):
+        raise ValidationError("Enter up to three phone numbers, separated by /.")
+    for number in numbers:
+        validate_phone(number)

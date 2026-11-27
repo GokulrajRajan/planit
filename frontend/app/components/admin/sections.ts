@@ -50,8 +50,8 @@ export const SECTION_INFO: Record<SectionKey, { label: string; where: string; ne
   },
   registration_details: {
     label: "Registration details",
-    where: "Footer and the Registration Details page.",
-    needs: "the ARN under Registration",
+    where: "The registration numbers row in the footer.",
+    needs: "at least one registration number under Registration",
     fixHref: "/admin/settings?tab=registration",
   },
   grievance_officer: {
