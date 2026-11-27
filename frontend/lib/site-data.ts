@@ -137,12 +137,17 @@ const EMPTY_SETTINGS: SiteSettings = {
 
 // Server-side calls go straight to Flask; the browser goes through the /api rewrite in next.config.ts.
 const API_URL = process.env.API_URL ?? "http://localhost:5000";
+// The hosted API only answers requests that carry this secret (proxy.ts adds it to browser calls).
+const API_PROXY_SECRET = process.env.API_PROXY_SECRET;
 // Admin edits show up on the public site within this many seconds.
 const REVALIDATE_SECONDS = 60;
 
 async function getData<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}/api${path}`, { next: { revalidate: REVALIDATE_SECONDS } });
+    const res = await fetch(`${API_URL}/api${path}`, {
+      headers: API_PROXY_SECRET ? { "x-planit-proxy-secret": API_PROXY_SECRET } : undefined,
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
     if (!res.ok) return null;
     const body = (await res.json()) as ApiEnvelope<T>;
     return body.data;

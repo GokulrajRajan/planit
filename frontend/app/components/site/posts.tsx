@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { optimizedImage } from "@/lib/images";
 import type { Category, Post, PostPage } from "@/lib/site-data";
 import { formatDate, PostBody } from "./page-kit";
 
@@ -63,7 +64,7 @@ export function PostList({
               {post.cover_image_url && (
                 // Cover images can be hosted anywhere the admin chooses.
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={post.cover_image_url} alt="" loading="lazy" />
+                <img src={optimizedImage(post.cover_image_url, 800)} alt="" loading="lazy" />
               )}
               <p className="post-card__meta">
                 {post.category && <span className="tag">{post.category.name}</span>}
@@ -107,7 +108,7 @@ export function PostArticle({ post, backHref, backLabel, note }: { post: Post; b
     <article className="article">
       {post.cover_image_url && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="article__cover" src={post.cover_image_url} alt="" />
+        <img className="article__cover" src={optimizedImage(post.cover_image_url, 1600)} alt="" />
       )}
       <PostBody content={post.content} />
       <p className="note">{note}</p>

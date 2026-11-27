@@ -6,10 +6,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def normalize_database_url(url: str | None) -> str | None:
+    """Hosted Postgres (Neon, Render) gives out postgres:// or postgresql:// URLs, which SQLAlchemy reads as
+    the psycopg2 driver. This app uses psycopg 3, so point those URLs at it."""
+    for prefix in ("postgres://", "postgresql://"):
+        if url and url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix) :]
+    return url
+
+
 class BaseConfig:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = normalize_database_url(os.environ.get("DATABASE_URL"))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Hosted databases drop idle connections (Neon also sleeps after 5 idle minutes), so each pooled
+    # connection is checked before use and replaced after a few minutes.
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 300}
 
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret-key")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(
@@ -40,6 +52,12 @@ class BaseConfig:
     # the reverse proxy in front of Next.js must overwrite it (nginx:
     # `proxy_set_header X-Forwarded-For $remote_addr;`), and Flask must only be reachable through Next.js.
     TRUSTED_PROXY_COUNT = int(os.environ.get("TRUSTED_PROXY_COUNT", 1))
+
+    # For hosting where Flask is publicly reachable (Render): a shared secret the Next.js server adds to every
+    # request it forwards (frontend/proxy.ts and lib/site-data.ts). When set, the API answers only requests that
+    # carry it, and takes the visitor's IP from the X-Planit-Client-IP header that Next.js sets, not from
+    # X-Forwarded-For (TRUSTED_PROXY_COUNT is then unused). Leave it empty in local development.
+    API_PROXY_SECRET = os.environ.get("API_PROXY_SECRET", "")
 
     # Rate limits use Flask-Limiter syntax. In-memory storage is per process: point
     # RATELIMIT_STORAGE_URI at Redis (redis://...) when running several gunicorn workers.
@@ -72,6 +90,15 @@ class BaseConfig:
         if address.strip()
     ]
 
+    # Images uploaded in the admin panel go from the browser straight to Cloudinary, signed by this API.
+    # The "API environment variable" from the Cloudinary dashboard: cloudinary://<key>:<secret>@<cloud name>.
+    # Empty = no upload button; image links can still be pasted.
+    CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL", "")
+    CLOUDINARY_FOLDER = os.environ.get("CLOUDINARY_FOLDER", "planit")
+
+    # Config key → environment variable that create_app requires (see ProductionConfig).
+    REQUIRED_SETTINGS: dict[str, str] = {}
+
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
@@ -81,7 +108,7 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = normalize_database_url(os.environ.get("TEST_DATABASE_URL"))
     JWT_COOKIE_CSRF_PROTECT = False
     RATELIMIT_ENABLED = False
     CAPTCHA_SECRET_KEY = ""
@@ -92,6 +119,16 @@ class TestingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
+    # No development fallbacks: a missing key must stop the app, not sign tokens with a known value.
+    SECRET_KEY = os.environ.get("SECRET_KEY", "")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "")
+    JWT_COOKIE_SECURE = os.environ.get("JWT_COOKIE_SECURE", "true").lower() == "true"
+    REQUIRED_SETTINGS = {
+        "SECRET_KEY": "SECRET_KEY",
+        "JWT_SECRET_KEY": "JWT_SECRET_KEY",
+        "SQLALCHEMY_DATABASE_URI": "DATABASE_URL",
+        "API_PROXY_SECRET": "API_PROXY_SECRET",
+    }
 
 
 config_by_name = {

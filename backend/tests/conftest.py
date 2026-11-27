@@ -3,7 +3,7 @@ import os
 import pytest
 
 from app import create_app
-from app.config import TestingConfig
+from app.config import TestingConfig, normalize_database_url
 from app.extensions import db
 from app.models.user import User, UserRole
 from app.services.auth_service import create_admin, issue_tokens
@@ -19,7 +19,7 @@ def app(request):
     uri = TestingConfig.SQLALCHEMY_DATABASE_URI
     if not uri:
         pytest.exit("Set TEST_DATABASE_URL to a separate database: the tests drop every table.")
-    if uri == os.environ.get("DATABASE_URL"):
+    if uri == normalize_database_url(os.environ.get("DATABASE_URL")):
         pytest.exit("TEST_DATABASE_URL must not be the development database: the tests drop every table.")
 
     # @pytest.mark.config(NAME=value) overrides config values for one test.

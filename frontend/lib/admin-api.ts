@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from "axios";
-import { api, toApiError, type ApiEnvelope } from "./api";
+import { api, ApiError, toApiError, type ApiEnvelope } from "./api";
 import type { Announcement, Category, PostSummary, SiteSettings, TeamMember, Testimonial } from "./site-data";
 
 /** Typed calls to the admin endpoints. Every failure is thrown as an ApiError (see lib/api.ts). */
@@ -164,7 +164,33 @@ export const adminApi = {
 
   settings: () => read<{ settings: SiteSettings }>("/settings").then((d) => d.settings),
   updateSettings: (input: SettingsInput) => write<{ settings: SiteSettings }>("patch", "/settings", input),
+
+  uploadImage,
 };
+
+type UploadTicket = { upload_url: string; fields: Record<string, string | number> };
+
+/** Sends an image straight to Cloudinary (the API only signs the upload) and returns its web address. */
+async function uploadImage(file: File): Promise<string> {
+  const { data: ticket } = await write<UploadTicket>("post", "/uploads/image-signature");
+  const form = new FormData();
+  for (const [key, value] of Object.entries(ticket.fields)) form.append(key, String(value));
+  form.append("file", file);
+
+  let status = 0;
+  let body: { secure_url?: string; error?: { message?: string } } | null = null;
+  try {
+    const res = await fetch(ticket.upload_url, { method: "POST", body: form });
+    status = res.status;
+    body = await res.json();
+  } catch {
+    // No connection, or an answer that isn't JSON: reported below.
+  }
+  if (!body?.secure_url) {
+    throw new ApiError(body?.error?.message ?? "The upload didn't go through. Please try again.", status);
+  }
+  return body.secure_url;
+}
 
 /** Query keys, grouped so a write can invalidate everything that shows the same data. */
 export const adminKeys = {

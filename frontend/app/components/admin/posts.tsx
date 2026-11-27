@@ -5,7 +5,7 @@ import { ArrowLeftIcon, ExternalLinkIcon, PencilIcon, PlusIcon, SearchIcon, Tras
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +21,7 @@ import {
   type PostType,
 } from "@/lib/admin-api";
 import { placeFieldErrors, SelectField, TextAreaField, TextField } from "./fields";
+import { ImageUploadRow } from "./ImageUpload";
 import { Callout, ConfirmButton, EmptyState, formatShortDate, PageHeader, PaginationBar, QueryState, useSave } from "./ui";
 
 const POST_TYPES = {
@@ -252,8 +253,10 @@ function PostForm({ type, post }: { type: PostType; post?: AdminPost }) {
     handleSubmit,
     setError,
     reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<PostFormValues>({ defaultValues: toFormValues(post) });
+  const coverImageUrl = useWatch({ control, name: "cover_image_url" });
 
   const save = useSave({
     mutationFn: (input: PostInput) => (post ? adminApi.updatePost(post.id, input) : adminApi.createPost(input)),
@@ -382,14 +385,21 @@ function PostForm({ type, post }: { type: PostType; post?: AdminPost }) {
                 registration={register("tags")}
                 error={errors.tags?.message}
               />
-              <TextField
-                label="Cover image URL"
-                optional
-                type="url"
-                placeholder="https://…"
-                registration={register("cover_image_url")}
-                error={errors.cover_image_url?.message}
-              />
+              <div className="space-y-2">
+                <TextField
+                  label="Cover image URL"
+                  optional
+                  type="url"
+                  placeholder="https://…"
+                  hint="Upload an image, or paste a link to one."
+                  registration={register("cover_image_url")}
+                  error={errors.cover_image_url?.message}
+                />
+                <ImageUploadRow
+                  url={coverImageUrl}
+                  onUploaded={(url) => setValue("cover_image_url", url, { shouldDirty: true, shouldValidate: true })}
+                />
+              </div>
               <Button type="submit" className="w-full" disabled={save.isPending || (!!post && !isDirty)}>
                 {save.isPending ? "Saving…" : post ? "Save changes" : `Create ${config.noun}`}
               </Button>

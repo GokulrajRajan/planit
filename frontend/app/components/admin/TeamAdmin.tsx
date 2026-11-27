@@ -3,13 +3,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { adminApi, adminKeys, type AdminTeamMember, type TeamMemberInput } from "@/lib/admin-api";
 import { nullIfEmpty, placeFieldErrors, SwitchField, TextAreaField, TextField } from "./fields";
+import { ImageUploadRow } from "./ImageUpload";
 import { Callout, ConfirmButton, EmptyState, PageHeader, QueryState, useSave } from "./ui";
 
 export function TeamAdmin() {
@@ -118,7 +119,7 @@ function MemberForm({
   nextOrder: number;
   onDone: () => void;
 }) {
-  const { register, control, handleSubmit, setError, formState: { errors } } = useForm<FormValues>({
+  const { register, control, handleSubmit, setError, setValue, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       name: member?.name ?? "",
       designation: member?.designation ?? "",
@@ -130,6 +131,7 @@ function MemberForm({
       visible: member?.visible ?? true,
     },
   });
+  const photoUrl = useWatch({ control, name: "photo_url" });
 
   const save = useSave({
     mutationFn: (input: TeamMemberInput) =>
@@ -153,7 +155,13 @@ function MemberForm({
       <TextField label="Designation" optional placeholder="e.g. Founder & Mutual Fund Distributor" registration={register("designation")} error={errors.designation?.message} maxLength={120} />
       <TextField label="Qualifications" optional placeholder="e.g. NISM Series V-A certified" registration={register("qualifications")} error={errors.qualifications?.message} maxLength={200} />
       <TextAreaField label="Short bio" optional registration={register("bio")} error={errors.bio?.message} rows={4} maxLength={2000} />
-      <TextField label="Photo URL" optional hint="A square photo works best." registration={register("photo_url")} error={errors.photo_url?.message} />
+      <div className="space-y-2">
+        <TextField label="Photo URL" optional hint="A square photo works best. Upload one, or paste a link." registration={register("photo_url")} error={errors.photo_url?.message} />
+        <ImageUploadRow
+          url={photoUrl}
+          onUploaded={(url) => setValue("photo_url", url, { shouldDirty: true, shouldValidate: true })}
+        />
+      </div>
       <TextField label="LinkedIn URL" optional type="url" placeholder="https://www.linkedin.com/in/…" registration={register("linkedin_url")} error={errors.linkedin_url?.message} />
       <TextField
         label="Order"

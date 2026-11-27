@@ -1,0 +1,48 @@
+# Render Blueprint for the Planit API (Flask). Schema: https://render.com/schema/render.yaml.json
+# Render dashboard → New → Blueprint → this repository. Render asks for each value marked `sync: false`
+# (secrets: pasted there, never committed) and generates the ones marked `generateValue`.
+services:
+  - type: web
+    name: planit-api
+    runtime: python
+    plan: free
+    # The closest Render region to India. Create the Neon database in AWS Asia Pacific (Singapore) too.
+    region: singapore
+    # The branch Vercel deploys to production.
+    branch: new-ui-planit
+    rootDir: backend
+    autoDeployTrigger: commit
+    buildCommand: pip install -r requirements.txt
+    # Free instances have no pre-deploy step, so migrations run just before the server starts.
+    # One worker keeps the in-memory rate limits in one place; its threads serve requests side by side.
+    startCommand: flask db upgrade && gunicorn run:app --workers 1 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/health
+    envVars:
+      # psycopg-binary 3.1 has no build for Python 3.13 (Render's default). The tests pass on 3.12.
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_APP
+        value: run.py
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      # The website (Vercel) adds this to every request it forwards. Copy it to the Vercel project's
+      # API_PROXY_SECRET environment variable.
+      - key: API_PROXY_SECRET
+        generateValue: true
+      - key: JWT_COOKIE_SECURE
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://planit-rouge.vercel.app
+      # Neon → Connect → the direct connection string (Connection pooling off).
+      - key: DATABASE_URL
+        sync: false
+      # Cloudinary dashboard → API environment variable: cloudinary://<key>:<secret>@<cloud name>
+      - key: CLOUDINARY_URL
+        sync: false
+      # Cloudflare Turnstile secret key. Until it's set, the enquiry and newsletter forms are refused.
+      - key: CAPTCHA_SECRET_KEY
+        sync: false

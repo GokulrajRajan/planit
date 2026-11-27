@@ -13,6 +13,7 @@ import { adminApi, adminKeys, type SettingsInput } from "@/lib/admin-api";
 import { contrastRatio } from "@/lib/brand";
 import type { SectionKey, SiteSettings } from "@/lib/site-data";
 import { placeFieldErrors, TextAreaField, TextField } from "./fields";
+import { ImageUploadButton } from "./ImageUpload";
 import { SECTION_INFO, SETTINGS_TABS, type SettingsTab } from "./sections";
 import { Callout, PageHeader, QueryState, useSave } from "./ui";
 
@@ -294,13 +295,18 @@ function BrandingForm({ settings }: { settings: SiteSettings }) {
       <CardContent>
         <form onSubmit={handleSubmit((values) => save.mutate(values))} noValidate className="space-y-5">
           <div className="grid gap-5 md:grid-cols-[1fr_12rem] md:items-start">
-            <TextField
-              label="Logo URL"
-              optional
-              hint="Leave empty to use the Planit logo built into the website."
-              registration={register("branding.logo_url")}
-              error={get(formState.errors, "branding.logo_url")?.message}
-            />
+            <div className="space-y-2">
+              <TextField
+                label="Logo URL"
+                optional
+                hint="Upload a logo or paste a link to one. Leave empty to use the Planit logo built into the website."
+                registration={register("branding.logo_url")}
+                error={get(formState.errors, "branding.logo_url")?.message}
+              />
+              <ImageUploadButton
+                onUploaded={(url) => setValue("branding.logo_url", url, { shouldDirty: true, shouldValidate: true })}
+              />
+            </div>
             <div className="grid h-20 place-items-center rounded-lg border bg-white p-2">
               {/* A preview of whatever the admin typed (it may live on any host), or the built-in logo. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
